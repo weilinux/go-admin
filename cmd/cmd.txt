@@ -1,0 +1,3 @@
+/cmd
+Main applications for this project.
+Each application’s name should match the executable

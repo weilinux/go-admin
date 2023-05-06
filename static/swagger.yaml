@@ -1,0 +1,34 @@
+info:
+  contact: {}
+paths:
+  /health:
+    get:
+      description: get app health
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: body
+      summary: 检测API
+      tags:
+      - InternalApi
+  /status:
+    get:
+      description: get app status
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: body
+      summary: 状态API
+      tags:
+      - InternalApi
+swagger: "2.0"

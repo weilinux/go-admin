@@ -1,0 +1,68 @@
+You should have the user id in the token.
+The auth middleware (Authenticate function) should extract that user ID,
+ and put it in the request context, so the actual handlers can use it.
+ There are other ways to do it, but this is common and straightforward. –
+Burak Serdar
+ Aug 14 at 17:03
+do you mean, I should set to the context like context.Set(r, UserId, getClaim.userId) and get in handlers .. can I set a struct (user := &models.User{}) to it? –
+itx
+ Aug 14 at 17:33
+
+
+
+You can put the user struct in request context,
+ and use that context downstream: ctx:=r.Context(), ctx.Set("user",userStruct); r=r.WithContext(ctx). Then handlers can get the user struct from request context. –
+Burak Serdar
+ Aug 14 at 1
+
+
+
+
+ # 这里也可以确实是不是管理员
+
+         // Set claims
+        // This is the information which frontend can use
+        // The backend can also decode the token and get admin etc.
+        claims := token.Claims.(jwt.MapClaims)
+        claims["name"] = "Jon Doe"
+        claims["admin"] = true
+        claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+
+
+
+		unc (h *handler) private(c echo.Context) error {
+    user := c.Get("user").(*jwt.Token)
+    claims := user.Claims.(jwt.MapClaims)
+    name := claims["name"].(string)
+    return c.String(http.StatusOK, "Welcome "+name+"!")
+
+
+
+
+	func isAdmin(next echo.HandlerFunc) echo.HandlerFunc {
+    return func(c echo.Context) error {
+        user := c.Get("user").(*jwt.Token)
+        claims := user.Claims.(jwt.MapClaims)
+        isAdmin := claims["admin"].(bool)
+        if isAdmin == false {
+            return echo.ErrUnauthorized
+        }
+        return next(c)
+    }
+}
+
+
+c.Keys["username"]
+
+
+Customer Claims
+又可將其稱作Payload，以Json的形式將使用者相關訊息，甚至是過期時間、簽證發放時間都寫在這
+
+app/middleware/jwt-token.go
+
+// MyClaims Customer jwt.StandardClaims
+type MyClaims struct {
+	Account string `json:"account"`
+	jwt.StandardClaims
+}
+這邊我們自定義一個MyClaims，並除了jwt-go原本的jwt.StandardClaims外，我們還另外儲存了Account的資訊

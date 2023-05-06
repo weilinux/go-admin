@@ -1,0 +1,66 @@
+get system info
+https://www.cnblogs.com/nickchen121/p/11517451.html
+
+https://blog.moonlightwatch.com/%E4%BB%A3%E7%A0%81%E7%AC%94%E8%AE%B0/2021/01/27/Golang%E8%8E%B7%E5%8F%96%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BF%A1%E6%81%AF.html
+
+
+
+//TODO: get system information
+# get system information
+https://pkg.go.dev/github.com/shirou/gopsutil
+https://www.cnblogs.com/XY-Heruo/p/15679182.html
+https://github.com/shirou/gopsutil
+
+
+// TODO: gin with prometheus library 如何集成监控进来，并且扩展监控以及动态化显示 业务大盘
+// gin with prometheus library 如何集成监控进来，并且扩展监控以及动态化显示 业务大盘
+// gin with prometheus library 如何集成监控进来，并且扩展监控以及动态化显示 业务大盘
+//https://www.jianshu.com/p/e42d95c25f18
+
+
+//--------------------------------frontend---------------------------//
+# 导航条收起:https://cdn.modb.pro/db/478881
+
+#可视化表单设计
+# git clone https://github.com/PanJiaChen/vue-element-admin.git
+
+#把那个tcping功能先集成进来
+
+#先注意于编码的实现，而不是关于功能的设计上.
+
+
+//当前主机服务状态， 当前主机端口状态，进行一个统计与检查，并能够主动报警
+，如果异常情况发生的话, 并且在定程度上可以进行自动修改
+
+
+//删除基础表的记录的时候，要先推动是否在联合表中被引用，否则造成数据库问题
+//
+
+//做一些后台运维操作的，自动化，半自动化的开发 mysql backup,
+mysql restore
+
+// 用户的权限,vuex根据用户的权限信息，来加载不同的路由
+// https://www.jianshu.com/p/81dad9261fce
+
+
+//vue前端全屏这后，显示的问题
+
+
+
+//分页逻辑
+//select query with limit and offset
+func Posts(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+
+	var posts []Post
+	db.Limit(limit).Offset(offset).Find(&posts)
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "",
+		"data":    posts,
+	})
+
+}
+
+//jwt功能改进,参考如下项目进行改造 /data/codebase/go-api-tech/jwt-auth

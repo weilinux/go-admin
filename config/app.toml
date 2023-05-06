@@ -1,0 +1,56 @@
+################################################################
+# 基础配置
+################################################################
+
+name = "go-gin-skeleton-auth"
+debug = false
+timezone = "PRC"
+defKey = "def value"
+httpPort = 59440
+
+[lang]
+langDir = "resource/lang"
+allowed = "en:English|zh-CN:简体中文"
+default = "en"
+
+[log]
+logFile = "/data/logs/{hostname}_run_application-{date}.log"
+errFile = "/data/logs/{hostname}_run_error-{date}.log"
+sqlLog = "/data/logs/{hostname}_run_sql-{date}.log"
+
+[db]
+#disable = true
+host = "192.168.2.231"
+port = 3306
+name = "godb"
+user = "root"
+password = "111000"
+maxIdleConn = 1024
+maxOpenConn = 200
+
+[mgo]
+disable = true
+servers = "127.0.0.1:3717,127.0.0.2:3717"
+uri = "/admin?replicaSet=mgset-1234"
+auth = "root:123456"
+database = "mydb"
+connectTimeoutMS = 10000
+
+[cache]
+disable = true
+db = 1
+auth = "123456"
+server = "127.0.0.1:6379"
+prefix = "cache"
+
+[redis]
+disable = false
+db = 2
+auth = "111000"
+server = "192.168.2.231:6379"
+
+# eureka server
+[eureka]
+servers = "127.0.0.1:4567,172.19.78.195:9030"
+username = "user"
+password = "pwd"
