@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	uuid "github.com/satori/go.uuid"
 	"github.com/weilinux/go-gin-skeleton-auth/model"
 	"github.com/weilinux/go-gin-skeleton-auth/web/middleware"
 	"github.com/weilinux/go-gin-skeleton-auth/web/session"
@@ -25,9 +24,7 @@ func UserLogin(c *gin.Context) {
 	userInput.Password = c.PostForm("Password")
 
 	if UserAuth(userInput) {
-		sID := uuid.NewV4()
-		c.SetCookie("session", sID.String(), 3600, "/", "localhost", false, true)
-		session.DbSessions[sID.String()] = c.PostForm("UserName")
+		session.SetCookieLogin(c)
 
 		token, err := generateJWT(userInput.UserName)
 		if err != nil {
@@ -38,12 +35,12 @@ func UserLogin(c *gin.Context) {
 			"Password": userInput.Password,
 			"Token":    token,
 		})
-		return
+		// return
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"UserName": userInput.UserName,
 		})
-		return
+		// return
 	}
 }
 
@@ -217,7 +214,7 @@ func generateJWT(username string) (string, error) {
 
 	claims["authorized"] = true
 	claims["username"] = username
-	claims["exp"] = time.Now().Add(time.Minute * 10).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * 60).Unix()
 
 	tokenString, err := token.SignedString(middleware.SampleSecretKey)
 
