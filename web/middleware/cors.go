@@ -2,27 +2,43 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // Cors 处理跨域请求,支持options访问
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Access-Control-Allow-Credentials=true和Access-Control-Allow-Origin="*"有冲突
-		// 故Access-Control-Allow-Origin需要指定具体得跨域origin
-		c.Header("Access-Control-Allow-Origin", "http://localhost:8084")
-		c.Header("Access-Control-Allow-Credentials", "false")
-		c.Header("Access-Control-Allow-Headers", "content-type")
-		c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE")
-		// c.Header("Access-Control-Expose-Headers", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+
 		if c.Request.Method == "OPTIONS" {
-			c.JSON(http.StatusOK, "")
-			c.Abort()
+			c.AbortWithStatus(204)
 			return
 		}
+
 		c.Next()
 	}
 }
+
+// func Cors() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		// Access-Control-Allow-Credentials=true和Access-Control-Allow-Origin="*"有冲突
+// 		// 故Access-Control-Allow-Origin需要指定具体得跨域origin
+// 		// c.Header("Access-Control-Allow-Origin", "http://localhost:8081")
+// 		c.Header("Access-Control-Allow-Origin", "*")
+// 		c.Header("Access-Control-Allow-Credentials", "true")
+// 		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+// 		c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE")
+// 		// c.Header("Access-Control-Expose-Headers", "*")
+// 		if c.Request.Method == "OPTIONS" {
+// 			c.JSON(http.StatusOK, "")
+// 			c.Abort()
+// 			return
+// 		}
+// 		c.Next()
+// 	}
+// }
 
 // 在 middleware 中使用
 // router.Use(cors.New(auth.CorsConfig(config)))
