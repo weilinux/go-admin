@@ -1,9 +1,5 @@
 <template>
   <el-container>
-    <el-header height="50px" style="padding:0">
-      <div class="header">服务器管理系统</div>
-    </el-header>
-
     <div id="login">
       <h2 align="center">{{ title }}</h2>
       <div v-if="noLogin"><label>账号：</label><input type="text" v-model="UserName" /></div>
@@ -11,7 +7,7 @@
       <p align="center"><button @click="click">{{ buttonTitle }}</button></p>
       <p align="center"><button @click="click2">注销</button></p>
       <p align="center">
-        <router-link to="enroll">申请注册</router-link>
+        <router-link to="register">申请注册</router-link>
       </p>
       <el-button>I am ElButton</el-button>
     </div>
@@ -42,11 +38,7 @@ export default {
       }
     },
     click2(){
-      axios.get('api/logout',{
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('Token')
-        }
-      }).then((response) =>{
+      axios.get('api/logout').then((response) =>{
         console.log(response)
       }).then((response) =>{
         console.error(response)
@@ -94,11 +86,7 @@ export default {
   mounted: function() {
     // http://localhost:9550/host/edit/2
     // 同样的,this.$route.query.id 如果这样访问的话hosts?id=2
-    axios.get('/api/logout' , {
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('Token')
-      }
-    }).then((response => {
+    axios.get('/api/logout').then((response => {
       console.info(response.data)
       this.host = response.data.host
     }), (response) => {

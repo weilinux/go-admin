@@ -28,11 +28,7 @@ export default {
   mounted: function() {
     // http://localhost:9550/user/edit/2
     // 同样的,this.$route.query.id 如果这样访问的话users?id=2
-    axios.get('/api/users/' + this.$route.params.id, {
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('Token')
-      }
-    }).then((response => {
+    axios.get('/api/users/' + this.$route.params.id).then((response => {
       console.info(response.data)
       this.user = response.data.user
     }), (response) => {

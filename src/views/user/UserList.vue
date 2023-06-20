@@ -63,11 +63,7 @@ export default {
       this.$router.push({name: 'UserNew'})
     },
     delete_user: function(index, row) {
-      axios.delete("/api/users/" + row.ID, {
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('Token')
-        }
-      }).then(response => {
+      axios.delete("/api/users/" + row.ID).then(response => {
         this.users.splice(index, 1)
         console.log(response)
       }, (response) => {
@@ -80,11 +76,7 @@ export default {
     // 注意这是一个模拟数据的方法
     // import Mock from '../../mock/Mock'
     // this.tradeList = Mock.getTradeList()
-    axios.get('/api/users', {
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('Token')
-      }
-    }).then((response) => {
+    axios.get('/api/users').then((response) => {
       //成功后的callback
         console.log(response)
         //把远程返回的结果(JSON) 赋予到本地, JS支持JSON
