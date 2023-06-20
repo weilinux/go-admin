@@ -36,7 +36,9 @@ func AddRoutes(r *gin.Engine) {
 	})
 
 	noAuth := r.Group("/")
+	noAuth.Use(middleware.Sensitive())
 	// noAuth.Use(middleware.NoAuth())
+	noAuth.Use(middleware.Cors())
 	noAuth.GET("/", controller.Home)
 	// status
 	noAuth.GET("/health", controller.AppHealth)
@@ -49,7 +51,7 @@ func AddRoutes(r *gin.Engine) {
 	admin := r.Group("/")
 	admin.Use(middleware.Auth())
 	admin.Use(middleware.Sensitive())
-	// admin.Use(middleware.Cors())
+	admin.Use(middleware.Cors())
 	admin.GET("/logout", controller.UserLogout)
 
 	// 用户管理
