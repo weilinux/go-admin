@@ -9,6 +9,7 @@ module.exports = {
             '/api': {
                 target: 'http://localhost:9550',
                 changeOrigin: true,
+                origin: 'http://localhost:8084',
                 ws: true,
                 secure: false,
                 logLevel: 'debug',
