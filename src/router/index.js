@@ -15,6 +15,9 @@ import HostNew from "../views/hosts/HostNew";
 import HostEdit from "../views/hosts/HostEdit";
 import HostAuth from "../views/hosts/HostAuth";
 
+// lazy-loaded
+const Profile = () => import("../views/user/Profile.vue")
+
 import Log from "../views/log/Log";
 
 const routes = [
@@ -27,6 +30,12 @@ const routes = [
         path: "/users",
         name: "Users",
         component: Users,
+      },
+      {
+        path: "/profile",
+        name: "profile",
+        // lazy-loaded
+        component: Profile,
       },
       {
         path: "/user/:id",
@@ -46,6 +55,9 @@ const routes = [
       {
         path: "/hosts",
         name: "Hosts",
+        meta: {
+          requiresAuth: true,
+        },
         component: Hosts,
       },
       {
@@ -96,7 +108,6 @@ const routes = [
   },
   {
     path: "/login",
-    name: "Login",
     component: Login,
   },
   {
@@ -116,18 +127,22 @@ const router = createRouter({
   routes,
 });
 
-export default router;
+// export default router;
 
 
 // 判断用户是否已经登录
-// Router.beforeEach((from) => {
-//   let isLogin = Store.getters.isLogin;
-//   if (isLogin || from.name == 'login') {
-//     return true;
+// router.beforeEach((to, from, next) => {
+//   let token = localStorage.getItem("Token")
+//
+//   if (!token) {
+//     next({
+//       path: "/login",
+//       query: {redirect: to.fullPath},
+//     })
 //   } else {
-//     return {name: 'login'}
+//     next()
 //   }
 //
 // })
-//
-// export default Router;
+
+export default router;
