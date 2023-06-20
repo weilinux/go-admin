@@ -46,8 +46,8 @@ prefix = "cache"
 [redis]
 disable = false
 db = 2
-auth = "111000"
-server = "192.168.2.231:6379"
+auth = "111000!Wei"
+server = "47.92.27.135:6397"
 
 # eureka server
 [eureka]

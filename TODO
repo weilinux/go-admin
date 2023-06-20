@@ -1,3 +1,8 @@
+//定义需求，测试用例，需求优先级
+
+//代码层面：提高效率，代码质量，代码可读+可扩展,
+//架构层面：性能，运维, 其他非业务功能与需求,
+
 get system info
 https://www.cnblogs.com/nickchen121/p/11517451.html
 
@@ -42,25 +47,85 @@ mysql restore
 // 用户的权限,vuex根据用户的权限信息，来加载不同的路由
 // https://www.jianshu.com/p/81dad9261fce
 
-
-//vue前端全屏这后，显示的问题
-
+//jwt功能改进,参考如下项目进行改造 /data/codebase/go-api-tech/jwt-auth
 
 
-//分页逻辑
-//select query with limit and offset
-func Posts(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
-	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+//Axios封装请求后端接口
+//https://blog.51cto.com/u_15709205/5447641?articleABtest=0
 
-	var posts []Post
-	db.Limit(limit).Offset(offset).Find(&posts)
-	c.JSON(http.StatusOK, gin.H{
-		"messege": "",
-		"data":    posts,
-	})
 
+//页面久了token过期了，要检测要，同时把页面转回vue未登录状态中去
+
+
+//上传文件至服务器，特定目录下面
+//https://gin-gonic.com/docs/examples/upload-file/
+
+
+//实时在页面上显示服务器的性能指标, 能够动态展示指标
+
+
+//token过期的处理：
+方案一：当我们操作某个需要token作为请求头的接口时，返回的数据错误error.response.status === 401，
+说明我们的token已经过期了。我们希望当响应返回的数据是401身份过期时，让当前浏览页面强行跳转到登入页面，
+让用户手动更新token。拿到最新的token值后再跳回之前浏览的页面。增强用户体验。
+
+方案二：实现用户无感知的刷新token值,我们希望当响应返回的数据是401身份过期时，响应阻拦器自动帮我们刷新token值
+，而不是让用户手动更新token。拿到最新的token值后再重新发起刚刚因token过期的请求。从而实现无感知
+https://www.jb51.net/article/275703.htm
+https://blog.csdn.net/GTbond/article/details/122124609
+https://www.zadmei.com/vtdgqwtj.html
+
+
+//详情页，添加搜索框
+
+//详情页，添加 page header?
+
+
+//滚动显示日志， 可暂停，可搜索关键字,可限制时间段（从页面时间组件选择时间范围)
+
+
+//动态的数据流
+//测试：添加可观测性功能，如不断添加记录（条目), 假设为日志记录，出发生严重的错误， 就发送golang邮件通知，并在页面通知显示有邮件通知到达
+
+
+//用户角色表
+
+//打开新页面时，有一个标签，这个可用于关闭页面，或者 返回页面，而不需重新发起请求
+
+
+//用户注册时 提交的结构体与，前端查询时的CURD的结构体应该是不同的，需要修正
+
+
+//把 get, post put的vue请求封装起来
+
+
+//打开exe 的ftp客户端程序，进行文件传输的功能
+
+//host asssign 的axios请求提取出去
+
+
+// 完美表结构， 请参考别人的项目
+https://github.com/mwqnice/oh-admin/blob/main/oh-admin.sql
+
+//把 存储以注入的方式写入，然后调用其存储的层
+type APIServer struct {
+	listenAddr string
+	// so you can actually put anything in that value that implements the storage interface
+	// 初始化的时候，带入值就行了
+	store Storage
 }
 
-//jwt功能改进,参考如下项目进行改造 /data/codebase/go-api-tech/jwt-auth
+//go本地缓存，分面式缓存
+
+
+//调用堆栈出错打印 trace() print
+
+
+
+
+
+
+
+
+
+

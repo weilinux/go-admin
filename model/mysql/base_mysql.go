@@ -13,7 +13,7 @@ var (
 )
 
 func InitMySQL() (err error) {
-	dsn := "root:111000@tcp(192.168.2.231:3306)/godb2"
+	dsn := "root:111000!Wei@tcp(47.92.27.135:3306)/godb2"
 	// 去初始化全局的db对象而不是新声明一个db变量
 	Db, err = sql.Open("mysql", dsn)
 	if err != nil {
@@ -33,7 +33,7 @@ func InitMySQL() (err error) {
 }
 
 func Connect() {
-	d, err := gorm.Open("mysql", "root:111000@tcp(192.168.2.231:3306)/godb2?charset=utf8&parseTime=True&loc=Local")
+	d, err := gorm.Open("mysql", "root:111000!Wei@tcp(47.92.27.135:3306)/godb2?charset=utf8mb4&parseTime=True&loc=Local")
 	if err != nil {
 		panic(err)
 	}

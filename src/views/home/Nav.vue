@@ -21,7 +21,7 @@
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="/login">登录</a>
                 <a class="dropdown-item" href="/logout">退出</a>
-                <a class="dropdown-item" href="signup">注册</a>
+                <a class="dropdown-item" href="register">注册</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="/user">管理</a>
               </div>

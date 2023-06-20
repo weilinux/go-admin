@@ -66,3 +66,32 @@ type MyClaims struct {
 	jwt.StandardClaims
 }
 這邊我們自定義一個MyClaims，並除了jwt-go原本的jwt.StandardClaims外，我們還另外儲存了Account的資訊
+
+请使用python 编写一个爬虫，在sg.iherb.com网站创建一个账号，用户名为xiaowei110@sina.com, 密码为111000@sina，并添加一个商品到购物车,请给出python实现代码
+
+
+  methods: {
+    handleRegister(user) {
+      this.message = "";
+      this.successful = false;
+      this.loading = true;
+
+      this.$store.dispatch("auth/register", user).then(
+        (data) => {
+          this.message = data.message;
+          this.successful = true;
+          this.loading = false;
+        },
+        (error) => {
+          this.message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+          this.successful = false;
+          this.loading = false;
+        }
+      );
+    },
+  },
