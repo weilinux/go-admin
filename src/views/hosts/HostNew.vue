@@ -44,8 +44,7 @@ export default {
         HostPort: this.host.HostPort
       }, {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Bearer ' + localStorage.getItem('Token')
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       } ).then((response) => {
         console.log(response)

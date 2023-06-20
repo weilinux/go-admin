@@ -43,6 +43,7 @@
 
 <script>
 import axios from "axios";
+import authHeader from "@/services/auth-header";
 
 export default {
   name: "HostEdit",
@@ -57,15 +58,11 @@ export default {
 
   methods: {
     onSubmit: function() {
+      let header = authHeader()
+      header["Content-Type"]  = "application/json"
       axios.post('/api/hosts/assign', {
         "user_id": this.user,
         "host_id": this.hosts
-      }, {
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('Token'),
-          'Content-Type': 'application/json'
-        }
-
       }).then((response) => {
         console.log(response)
       }, (response => {
@@ -74,11 +71,7 @@ export default {
     },
 
     changeValue: function() {
-      axios.get('/api/users/' + this.user + '/hosts', {
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('Token')
-        }
-      }).then((response) => {
+      axios.get('/api/users/' + this.user + '/hosts').then((response) => {
         console.log(response)
         this.hostList = response.data.rows
       }, (response) => {
@@ -88,11 +81,7 @@ export default {
   },
 
   mounted: function() {
-    axios.get('/api/users', {
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('Token')
-      }
-    }).then((response) => {
+    axios.get('/api/users').then((response) => {
           //成功后的callback
           console.log(response)
           //把远程返回的结果(JSON) 赋予到本地, JS支持JSON
