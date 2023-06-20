@@ -19,20 +19,25 @@ func GetBindHosts(c *gin.Context) {
 	// user, _ := model.FindUserByName(session.GetUser(c))
 
 	// 20230505
-	// var username string
-	// if user, ok := c.Get("username"); ok == true {
-	// 	username = user.(string)
-	// }
-	// user, err := model.FindUserByName(username)
-
-	user, err := model.FindUserByName(session.GetUser(c))
-
+	var username string
+	if user, ok := c.Get("username"); ok == true {
+		username = user.(string)
+	}
+	user, err := model.FindUserByName(username)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	// session.SetCookieLogin(c)
+	// user, err := model.FindUserByName(session.GetUser(c))
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	rows, count := model.GetUserHosts(user.ID, page, limit)
 	data := map[string]interface{}{
 		"status":   "UP",
-		"rows":     model.GetAllHosts(user.ID),
+		"rows":     rows,
+		"total":    count,
 		"UserName": session.GetUser(c),
 	}
 	c.JSON(http.StatusOK, data)
@@ -51,7 +56,7 @@ func GetUnBindHosts(c *gin.Context) {
 	}
 	data := map[string]interface{}{
 		"status":   "UP",
-		"rows":     model.GetAllHostAll(ID),
+		"rows":     model.GetUserUnbindHosts(ID),
 		"UserName": session.GetUser(c),
 	}
 	c.JSON(http.StatusOK, data)
