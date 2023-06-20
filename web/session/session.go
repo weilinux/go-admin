@@ -11,13 +11,10 @@ var DbSessions = map[string]string{}
 func GetUser(c *gin.Context) string {
 	// get cookie
 	cookie, err := c.Cookie("session")
-	// 这时为什么要生产一个session 保存至cookie中呢 ?
-	// 这时为什么要生产一个session 保存至cookie中呢 ?
-	// 这时为什么要生产一个session 保存至cookie中呢 ?
 	if err != nil {
 		cookie = uuid.NewV4().String()
 	}
-	c.SetCookie("session", cookie, -1, "/", "192.168.2.106", false, true)
+	c.SetCookie("session2", cookie, 3600, "/", "localhost", false, true)
 
 	u := DbSessions[cookie]
 
@@ -25,4 +22,12 @@ func GetUser(c *gin.Context) string {
 		return ""
 	}
 	return u
+}
+
+func SetCookieLogin(c *gin.Context) {
+	cookie := uuid.NewV4().String()
+	// c.SetCookie("session2", cookie, 3600, "/", "localhost", false, true)
+	DbSessions[cookie] = c.PostForm("UserName")
+	c.SetCookie("session", cookie, 3600, "/", "localhost", false, true)
+	return
 }
