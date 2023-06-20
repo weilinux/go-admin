@@ -51,14 +51,6 @@ func (h *Host) IsAlive() bool {
 }
 
 func (h Host) Connect() error {
-
-	// if h.IsAlive() {
-	// 	return nil
-	// }
-	// if user have privileges ? {
-	//    then conn, err := net.Dial("tcp", h.Host)
-	//    return nil
-	// }
 	return nil
 }
 
@@ -81,47 +73,36 @@ func (h *Host) CreateHost() *Host {
 	return h
 }
 
-// GetAllHosts CURD ,
-func GetAllHosts(id uint) []Host {
-	// TODO: support gorm query style
+// GetUserHosts CURD ,
+func GetUserHosts(id uint, page, limit int) ([]Host, int) {
+	// https://github.com/go-gorm/gorm/issues/2994
 	var hosts []Host
-	// DBM.Find(&hosts)
-	sqlStr := `SELECT id, host_name, host_port, host_user, host_password, host_ip from hosts WHERE id in (SELECT host_id from host_users WHERE user_id = ? and deleted_at IS NULL);`
-	rows, err := mysql.Db.Query(sqlStr, id)
-	// rows, err := mysql.Db.Query(sqlStr, 1)
-	if err != nil {
+	var count int
+
+	if err := DBM.
+		Table("hosts").
+		Joins(" INNER JOIN host_users on hosts.id = host_users.host_id ").
+		Where("host_users.user_id = ? AND hosts.deleted_at is NULL", id).
+		Count(&count).
+		Offset((page - 1) * limit).
+		Limit(limit).
+		Find(&hosts).Error; err != nil {
 		fmt.Printf("Query: %v\n", err)
 	}
-	for rows.Next() {
-		var host Host
-		err = rows.Scan(&host.ID, &host.HostName, &host.HostPort, &host.HostUser, &host.HostPassword, &host.HostIP)
-		if err != nil {
-			fmt.Println("scan error:", err)
-		}
-		hosts = append(hosts, host)
-	}
-	return hosts
+
+	return hosts, count
 }
 
-// GetAllHostAll 如果没有用户id的话来进行全局查找, 所以这里不需要这个新的函数
-func GetAllHostAll(id int64) []Host {
-	// TODO: support gorm query style
+// GetUserUnbindHosts 如果没有用户id的话来进行全局查找, 所以这里不需要这个新的函数
+func GetUserUnbindHosts(id int64) []Host {
 	var hosts []Host
-	// DBM.Find(&hosts)
-	// sqlStr := `SELECT id, host_name, host_port, host_user, host_password, host_ip from hosts WHERE deleted_at IS NULL;`
-	sqlStr := `SELECT id, host_name, host_port, host_user, host_password, host_ip from hosts WHERE deleted_at IS NULL and id not in (SELECT host_id from host_users WHERE user_id = ?);`
-	// rows, err := mysql.Db.Query(sqlStr, id)
-	rows, err := mysql.Db.Query(sqlStr, id)
-	if err != nil {
+
+	sub := DBM.Table("host_users").Select("host_id").Where("user_id = ?", id).SubQuery()
+	if err := DBM.
+		Table("hosts").
+		Where("deleted_at is NUll AND id NOT IN ?", sub).
+		Find(&hosts).Error; err != nil {
 		fmt.Printf("Query: %v\n", err)
-	}
-	for rows.Next() {
-		var host Host
-		err = rows.Scan(&host.ID, &host.HostName, &host.HostPort, &host.HostUser, &host.HostPassword, &host.HostIP)
-		if err != nil {
-			fmt.Println("scan error:", err)
-		}
-		hosts = append(hosts, host)
 	}
 	return hosts
 }
