@@ -1,13 +1,9 @@
-<template>
-
-</template>
+<template></template>
 
 <script>
 export default {
-  name: "HostMetrics"
-}
+  name: "HostMetrics",
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

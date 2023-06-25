@@ -1,58 +1,60 @@
 <template>
-<!--  <div class="home">-->
-<!--    <img alt="Vue logo" src="../assets/logo.png" />-->
-<!--    <HelloWorld msg="Welcome to Your Vue.js App" />-->
-<!--  </div>-->
+  <!--  <div class="home">-->
+  <!--    <img alt="Vue logo" src="../assets/logo.png" />-->
+  <!--    <HelloWorld msg="Welcome to Your Vue.js App" />-->
+  <!--  </div>-->
   <el-container id="middle-area">
     <el-container width="200px">
       <el-aside width="200px" style="alignment:center; height: 100%; padding-top: 0px;">
         <el-menu id="el-menu"
-            mode="vertical"
-            class="aside"
-            router
-            @select="selectItem"
-            :default-active="$route.path"
-            :unique-opened="true">
-          <el-menu-item index="/main">首页</el-menu-item>
+                 mode="vertical"
+                 class="aside"
+                 router
+                 @select="selectItem"
+                 :default-active="$route.path"
+                 :unique-opened="true">
+          <el-menu-item index="/main">概览</el-menu-item>
 
+          <el-menu-item index="/log">软件仓库</el-menu-item>
           <el-sub-menu index="3">
             <template #title>主机管理</template>
             <el-menu-item index="/hosts">列表</el-menu-item>
             <el-menu-item index="/host/auth">授权</el-menu-item>
+            <el-menu-item index="/host/monitor">监控</el-menu-item>
+            <el-menu-item index="/host/warn">告警</el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="4">
             <template #title>中间件</template>
-            <el-menu-item index="4-1">mysql数据库</el-menu-item>
-            <el-menu-item index="4-2">Redis数据库</el-menu-item>
+            <el-menu-item index="/database">数据库</el-menu-item>
+            <!--            <el-menu-item index="4-2">Redis数据库</el-menu-item>-->
             <el-menu-item index="4-3">RabbitMQ</el-menu-item>
-            <el-menu-item index="4-4">Mongo数据库</el-menu-item>
+            <!--            <el-menu-item index="4-4">Mongo数据库</el-menu-item>-->
           </el-sub-menu>
-          <el-menu-item index="4">监控指标</el-menu-item>
+          <el-menu-item index="4">容器管理</el-menu-item>
+          <el-menu-item index="5">计划任务</el-menu-item>
 
-          <el-menu-item index="/log">日志</el-menu-item>
-          <el-menu-item index="/log">运维工具</el-menu-item>
-          <el-menu-item index="7">告警</el-menu-item>
+          <el-menu-item index="/log">日志审计</el-menu-item>
           <el-sub-menu index="8">
-            <template #title>用户管理</template>
-            <el-menu-item index="/login">登录</el-menu-item>
-            <el-menu-item index="/register">注册</el-menu-item>
+            <template #title>权限管理</template>
             <el-menu-item index="/users">用户列表</el-menu-item>
+            <el-menu-item index="/login">角色管理</el-menu-item>
+            <el-menu-item index="/register">菜单管理</el-menu-item>
           </el-sub-menu>
         </el-menu>
       </el-aside>
     </el-container>
 
-      <el-container>
-<!--        <el-header height="40px" style="padding:0;margin:0">-->
-<!--&lt;!&ndash;          <div id="header">页面主题</div>&ndash;&gt;-->
-<!--        </el-header>-->
-        <el-main id="el-main" style="padding:0; min-height: 450px;">
-          <div class="content">
-            <router-view>
-            </router-view>
-          </div>
-        </el-main>
-      </el-container>
+    <el-container>
+      <!--        <el-header height="40px" style="padding:0;margin:0">-->
+      <!--&lt;!&ndash;          <div id="header">页面主题</div>&ndash;&gt;-->
+      <!--        </el-header>-->
+      <el-main id="el-main" style="padding:0; min-height: 450px;">
+        <div class="content">
+          <router-view>
+          </router-view>
+        </div>
+      </el-main>
+    </el-container>
   </el-container>
 
 
@@ -65,9 +67,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// @ is an alias to /src
-// @ is an alias to /src
 
 export default {
   name: "Home",

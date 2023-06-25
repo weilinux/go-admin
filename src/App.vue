@@ -1,26 +1,35 @@
 <template>
   <el-container>
-    <el-header height="40px" style="padding:0;margin:0">
-
+    <el-header height="40px" style="padding: 0; margin: 0">
       <div id="nav">
         <a href="/" class="logo">
           <span class="logo-lg"><b>Go</b>Admin</span>
         </a>
         <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-dark">
           <div class="navbar-nav mr-auto">
+            <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
+              <el-radio-button :label="false">展开</el-radio-button>
+              <el-radio-button :label="true">收起</el-radio-button>
+            </el-radio-group>
             <li class="nav-item">
               <router-link to="/main" class="nav-link">
                 <font-awesome-icon icon="home" /> 主页
               </router-link>
             </li>
             <li v-if="showAdminBoard" class="nav-item">
-              <router-link to="/admin" class="nav-link">Admin Board</router-link>
+              <router-link to="/admin" class="nav-link"
+                >Admin Board</router-link
+              >
             </li>
             <li v-if="showModeratorBoard" class="nav-item">
-              <router-link to="/mod" class="nav-link">Moderator Board</router-link>
+              <router-link to="/mod" class="nav-link"
+                >Moderator Board</router-link
+              >
             </li>
             <li class="nav-item">
-              <router-link v-if="currentUser" to="/user" class="nav-link">User</router-link>
+              <router-link v-if="currentUser" to="/user" class="nav-link"
+                >User</router-link
+              >
             </li>
           </div>
 
@@ -54,40 +63,39 @@
       </div>
       <!--          <div id="header">页面主题</div>-->
     </el-header>
-
   </el-container>
-    <router-view>
-
-    </router-view>
+  <router-view>
+  </router-view>
 </template>
 
 <script>
 export default {
+  name: "App",
   computed: {
     currentUser() {
       return this.$store.state.auth.user;
     },
     showAdminBoard() {
-      if (this.currentUser && this.currentUser['roles']) {
-        return this.currentUser['roles'].includes('ROLE_ADMIN');
+      if (this.currentUser && this.currentUser["roles"]) {
+        return this.currentUser["roles"].includes("ROLE_ADMIN");
       }
 
       return false;
     },
     showModeratorBoard() {
-      if (this.currentUser && this.currentUser['roles']) {
-        return this.currentUser['roles'].includes('ROLE_MODERATOR');
+      if (this.currentUser && this.currentUser["roles"]) {
+        return this.currentUser["roles"].includes("ROLE_MODERATOR");
       }
 
       return false;
-    }
+    },
   },
   methods: {
     logOut() {
-      this.$store.dispatch('auth/logout');
-      this.$router.push('/login');
-    }
-  }
+      this.$store.dispatch("auth/logout");
+      this.$router.push("/login");
+    },
+  },
 };
 </script>
 
@@ -118,7 +126,6 @@ export default {
   color: #42b983;
 }
 
-
 .header {
   font-size: 30px;
   line-height: 50px;
@@ -131,7 +138,7 @@ export default {
 }
 
 .subHeader {
-  background-color:cornflowerblue;
+  background-color: cornflowerblue;
 }
 
 .desc {
@@ -146,13 +153,14 @@ export default {
 }
 
 .footer {
-  background-color:dimgrey;
+  background-color: dimgrey;
   color: white;
   font-size: 17px;
   line-height: 30px;
 }
 
-body, html {
+body,
+html {
   height: 100%;
 }
 
@@ -166,7 +174,5 @@ body, html {
   border-right-style: solid;
   border-right-width: 1px;
   background-color: #001529;
-
 }
-
 </style>

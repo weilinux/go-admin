@@ -2,9 +2,9 @@
   <div class="col-md-12">
     <div class="card card-container">
       <img
-          id="profile-img"
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          class="profile-img-card"
+        id="profile-img"
+        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+        class="profile-img-card"
       />
       <Form @submit="handleLogin" :validation-schema="schema">
         <div class="form-group">
@@ -21,8 +21,8 @@
         <div class="form-group">
           <button class="btn btn-primary btn-block" :disabled="loading">
             <span
-                v-show="loading"
-                class="spinner-border spinner-border-sm"
+              v-show="loading"
+              class="spinner-border spinner-border-sm"
             ></span>
             <span>Login</span>
           </button>
@@ -76,18 +76,18 @@ export default {
       this.loading = true;
 
       this.$store.dispatch("auth/login", user).then(
-          () => {
-            this.$router.push("/main");
-          },
-          (error) => {
-            this.loading = false;
-            this.message =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                error.message ||
-                error.toString();
-          }
+        () => {
+          this.$router.push("/main");
+        },
+        (error) => {
+          this.loading = false;
+          this.message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+        }
       );
     },
   },

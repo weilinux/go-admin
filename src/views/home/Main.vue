@@ -3,15 +3,10 @@
 </template>
 
 <script>
-
 export default {
   name: "Main",
-  components: {
-
-  }
-}
+  components: {},
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
