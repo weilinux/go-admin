@@ -11,17 +11,22 @@ import (
 // Host 代码的形式化越优秀，说明代码越符合代码级别的CURD
 
 var DBM *gorm.DB
+
 var DbM *sql.DB
 
 type Host struct {
 	gorm.Model
 	HostName     string
-	HostIP       string
 	HostPort     int
 	HostUser     string
 	HostPassword string
+	HostIP       string
 	isAlive      bool
-	Users        []User `gorm:"many2many:host_users"`
+	Users        []User `gorm:"many2many:go_admin_host_user"`
+}
+
+func (h *Host) TableName() string {
+	return "go_admin_" + "host"
 }
 
 func init() {
@@ -74,15 +79,15 @@ func (h *Host) CreateHost() *Host {
 }
 
 // GetUserHosts CURD ,
-func GetUserHosts(id uint, page, limit int) ([]Host, int) {
+func GetUserHosts(id int, page, limit int) ([]Host, int) {
 	// https://github.com/go-gorm/gorm/issues/2994
 	var hosts []Host
 	var count int
 
 	if err := DBM.
-		Table("hosts").
-		Joins(" INNER JOIN host_users on hosts.id = host_users.host_id ").
-		Where("host_users.user_id = ? AND hosts.deleted_at is NULL", id).
+		Table("go_admin_host").
+		Joins(" INNER JOIN go_admin_host_user on go_admin_host.id = go_admin_host_user.host_id ").
+		Where("go_admin_host_user.user_id = ? AND go_admin_host.deleted_at is NULL", id).
 		Count(&count).
 		Offset((page - 1) * limit).
 		Limit(limit).
@@ -97,9 +102,9 @@ func GetUserHosts(id uint, page, limit int) ([]Host, int) {
 func GetUserUnbindHosts(id int64) []Host {
 	var hosts []Host
 
-	sub := DBM.Table("host_users").Select("host_id").Where("user_id = ?", id).SubQuery()
+	sub := DBM.Table("go_admin_host_user").Select("host_id").Where("user_id = ?", id).SubQuery()
 	if err := DBM.
-		Table("hosts").
+		Table("go_admin_host").
 		Where("deleted_at is NUll AND id NOT IN ?", sub).
 		Find(&hosts).Error; err != nil {
 		fmt.Printf("Query: %v\n", err)
@@ -124,7 +129,7 @@ func DeleteHost(Id int64) Host {
 }
 
 func HostAssignment(userId int64, hostIds []int64) error {
-	sqlStr := `insert into host_users(host_id, user_id) values(?, ?)`
+	sqlStr := `insert into go_admin_host_user(host_id, user_id) values(?, ?)`
 	for _, hostId := range hostIds {
 		_, err := mysql.Db.Exec(sqlStr, hostId, userId)
 		if err != nil {

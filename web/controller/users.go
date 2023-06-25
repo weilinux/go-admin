@@ -132,10 +132,10 @@ func DeleteUser(c *gin.Context) {
 }
 
 func EditUser(c *gin.Context) {
-	var user = &model.User{}
+	// var user = &model.User{}
 
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	user.ID = uint(ID)
+	user := &model.User{Model: &model.Model{ID: int(ID)}}
 
 	user.UserName = c.PostForm("UserName")
 	user.Password = c.PostForm("Password")
@@ -159,6 +159,8 @@ func AddUser(c *gin.Context) {
 	var user = &model.User{}
 	user.UserName = c.PostForm("UserName")
 	user.Password = c.PostForm("Password")
+	ID := c.PostForm("ID")
+	id, _ := strconv.Atoi(ID)
 
 	if model.UserExists(*user) {
 		c.JSON(http.StatusForbidden, gin.H{
@@ -168,6 +170,11 @@ func AddUser(c *gin.Context) {
 	}
 
 	if _, err := model.CreateUser(model.User{
+		Model: &model.Model{
+			ID:          id,
+			CreatedTime: time.Now(),
+			UpdatedTime: time.Now(),
+		},
 		UserName: user.UserName,
 		Password: string(generatedHash([]byte(user.Password))),
 	}); err != nil {
