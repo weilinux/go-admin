@@ -6,7 +6,7 @@
         align="center"
         label-class-name="my-label"
         class="my-content"
-        width="150px">{{ user.ID }}</el-descriptions-item>
+        width="150px">{{ user.id }}</el-descriptions-item>
     <el-descriptions-item label="用户名" label-align="right" align="center">{{ user.UserName }}</el-descriptions-item>
     <el-descriptions-item label="用户密码" label-align="right" align="center">{{ user.Password }}</el-descriptions-item>
   </el-descriptions>

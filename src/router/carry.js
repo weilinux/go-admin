@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from "@/store";
 import router from "@/router";
+import {ElMessage} from "element-plus";
 
 // axios.defaults.baseURL = BASE_URL;
 axios.interceptors.request.use((config) => {
@@ -11,6 +12,7 @@ axios.interceptors.request.use((config) => {
     }
     return config
 }, (error) => {
+    ElMessage.error(error)
     return Promise.reject(error)
 })
 
@@ -23,14 +25,15 @@ axios.interceptors.response.use(function (response) {
             // remove token
             //store.commit()处理当前用户状态，登录状态,路由转向
             //router.replace()
-            console.log("hello horse")
+            ElMessage.error("登录已过期，请重新登录!")
             store.dispatch('auth/logout');
             router.push('/login');
+            // setTimeout()
             break;
     }
     return response
 }, function (error) {
-    console.log(error)
+    ElMessage.error(error)
     return Promise.reject(error);
 });
 

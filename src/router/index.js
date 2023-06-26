@@ -14,6 +14,7 @@ import Host from "../views/hosts/Host";
 import HostNew from "../views/hosts/HostNew";
 import HostEdit from "../views/hosts/HostEdit";
 import HostAuth from "../views/hosts/HostAuth";
+import Database from "../views/middleware/Database";
 
 // lazy-loaded
 const Profile = () => import("../views/user/Profile.vue")
@@ -89,6 +90,11 @@ const routes = [
         path: "/main",
         name: "Main",
         component: Main,
+      },
+      {
+        path: "/database",
+        name: "Database",
+        component: Database,
       },
       {
         path: "/about",

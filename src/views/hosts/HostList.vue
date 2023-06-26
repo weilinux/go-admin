@@ -10,7 +10,7 @@
     <el-table-column prop="HostName" label="主机名" width="180" />
     <el-table-column prop="HostIP" label="主机地址" width="250" />
     <el-table-column prop="HostPort" label="主机端口" width="250" />
-    <el-table-column fixed="right" label="操作" width="350">
+    <el-table-column fixed="right" label="功能操作" width="350">
       <template #default="scope">
         <el-button
             link

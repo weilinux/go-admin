@@ -6,11 +6,10 @@
 <!--  <el-table :data="users" style="width: 100%" height="250" :table-layout="tableLayout">-->
   <el-table :data="users" style="width: 100%" height="250">
     <el-table-column type="index" label="序号" width="120" />
-    <el-table-column prop="ID" label="用户编号" width="120" />
+    <el-table-column prop="id" label="用户编号" width="120" />
     <el-table-column prop="UserName" label="名称" width="120" />
     <el-table-column prop="Password" label="密钥" width="520" />
-    <el-table-column prop="CreatedAt" label="创建时间" width="250" />
-    <el-table-column fixed="right" label="操作" width="150">
+    <el-table-column fixed="right" label="功能操作" width="150">
       <template #default="scope">
         <el-button
             link
@@ -54,16 +53,16 @@ export default {
     //   this.title = "用户列表(修改过2)"
     // },
     show_user: function(index, row) {
-      this.$router.push({name: 'User', params: {id: row.ID}})
+      this.$router.push({name: 'User', params: {id: row.id}})
     },
     edit_user: function(index, row) {
-      this.$router.push({name: 'UserEdit', params: {id: row.ID}})
+      this.$router.push({name: 'UserEdit', params: {id: row.id}})
     },
     add_user: function() {
       this.$router.push({name: 'UserNew'})
     },
     delete_user: function(index, row) {
-      axios.delete("/api/users/" + row.ID).then(response => {
+      axios.delete("/api/users/" + row.id).then(response => {
         this.users.splice(index, 1)
         console.log(response)
       }, (response) => {

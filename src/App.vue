@@ -8,6 +8,10 @@
         </a>
         <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-dark">
           <div class="navbar-nav mr-auto">
+            <el-radio-group v-model="isCollapse" style="margin-bottom: 20px;">
+              <el-radio-button :label="false">展开</el-radio-button>
+              <el-radio-button :label="true">收起</el-radio-button>
+            </el-radio-group>
             <li class="nav-item">
               <router-link to="/main" class="nav-link">
                 <font-awesome-icon icon="home" /> 主页
@@ -63,6 +67,7 @@
 
 <script>
 export default {
+  name: "App",
   computed: {
     currentUser() {
       return this.$store.state.auth.user;

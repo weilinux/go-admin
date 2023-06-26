@@ -22,15 +22,19 @@ import (
 // Logger
 
 type User struct {
-	gorm.Model
+	*Model
 	UserName string
 	Password string
+}
+
+func (u *User) TableName() string {
+	return "go_admin_" + "user"
 }
 
 func init() {
 	mysql.Connect()
 	DBM = mysql.GetDB()
-	DBM.AutoMigrate(&User{})
+	DBM.AutoMigrate(&User{}, &Role{}, &Host{}, &UserRole{})
 }
 
 func FindUserByName(userName string) (User, error) {
@@ -66,7 +70,8 @@ func GetUserById(Id int64) (*User, *gorm.DB) {
 
 func DeleteUser(Id int64) User {
 	var getUser User
-	if err := DBM.Where("id = ?", Id).Delete(getUser).Error; err != nil {
+	// 物理删除 ,gorm软删除，硬删除, Unscoped无关，这里必须是指针
+	if err := DBM.Where("id = ?", Id).Delete(&getUser).Error; err != nil {
 		fmt.Println(err.Error())
 	}
 	return getUser

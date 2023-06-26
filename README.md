@@ -1,29 +1,31 @@
-# vue3_demo
+# go-admin 运维后台
 
-## Project setup
+
+## 项目环境
 ```
-npm install
+go-gin-skeleton架构
+消息队列中间件
+缓存系统
 ```
 
-### Compiles and hot-reloads for development
+## 业务梳理
+```
+1. 用户管理
+2. 主机管理
+3. 权限管理
+4. 应用管理
+5. 监控管理
+```
+
+
+## 部署运行
+
+### 后台
+```
+go run main.go
+```
+
+### 前台
 ```
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

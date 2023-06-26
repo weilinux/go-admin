@@ -11,7 +11,7 @@
          v-for="item in userList"
          :key="item.value"
          :label="item.UserName"
-         :value="item.ID"
+         :value="item.id"
      />
      </el-select>
  </div>

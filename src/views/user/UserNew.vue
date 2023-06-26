@@ -2,7 +2,7 @@
   <h4>创建用户</h4>
   <el-form :model="form" label-width="120px" width="50%">
     <el-form-item label="用户ID">
-      <el-input v-model=user.ID />
+      <el-input v-model=user.id />
     </el-form-item>
     <el-form-item label="用户名">
       <el-input v-model=user.UserName />
@@ -33,7 +33,7 @@ export default {
   methods: {
     onSubmit: function() {
       axios.post('/api/users',{
-        ID: this.user.ID,
+        ID: this.user.id,
         UserName: this.user.UserName,
         Password: this.user.Password,
       }, {
