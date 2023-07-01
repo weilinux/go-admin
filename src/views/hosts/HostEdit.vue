@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import hostService from "@/services/host.service";
 
 export default {
   name: "HostEdit",
@@ -34,41 +34,20 @@ export default {
 
   methods: {
     onSubmit: function() {
-      axios.put('/api/hosts/' + this.$route.params.id,{
-        HostName: this.host.HostName,
-        HostIP: this.host.HostIP,
-        HostPort: this.host.HostPort
-      }, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      } ).then((response) => {
+      hostService.updateHost(this.$route.params.id, this.host).then((response) => {
         console.log(response)
-        alert('修改成功')
         this.$router.go(-1)
-      }, (response) => {
-        console.error(response)
-        alert('修改失败')
       })
-
-
     }
-
-
   },
 
+  //TODO: 这里不应该再次发出请求的了，应该使用客户端存在的数据进行处理
   mounted: function() {
-    // http://localhost:9550/host/edit/2
-    // 同样的,this.$route.query.id 如果这样访问的话hosts?id=2
-    axios.get('/api/hosts/' + this.$route.params.id).then((response => {
-      console.info(response.data)
-      this.host = response.data.host
-    }), (response) => {
-      console.error(response)
+    hostService.getHost(this.$route.params.id).then((response) => {
+      this.host = response.data.data
+      console.log(response)
     })
-
   }
-
 }
 </script>
 

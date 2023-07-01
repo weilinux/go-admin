@@ -1,7 +1,12 @@
 <template>
-  <div>
+  <div style="margin-top: 40px;">
     {{ title }}
+  </div>
+  <div>
+    <el-input v-model="host" placeholder="主机地址/主机名称" style="width: 150px;alignment: left" class="filter-item"/>
+    <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
     <el-button class="mt-1" style="width: 10%;margin-left: 500px"  @click="add_host">添加</el-button>
+    <el-button class="mt-1" style="width: 10%;margin-left: 500px"  @click="add_host">添加diag</el-button>
   </div>
 
   <el-table :data="hosts" style="width: 100%;" height="460">
@@ -30,18 +35,18 @@
         <el-button
             link
             type="primary"
+            icon="Edit"
             size="small"
             @click="edit_host(scope.$index, scope.row)">编辑</el-button>
         <el-button
             link
             type="primary"
+            icon="Delete"
             size="small"
             @click="delete_host(scope.$index, scope.row)">删除</el-button>
-
       </template>
     </el-table-column>
   </el-table>
-
 
   <hr class="my-2" />
   <div class="demo-pagination-block;" style="padding-left: 580px">
@@ -55,7 +60,6 @@
         @current-change="handleCurrentChange"
     />
   </div>
-  <!--        :background="background"-->
 
 </template>
 
@@ -69,6 +73,7 @@ export default {
   data: function() {
     return {
       title: "主机列表",
+      host: "",
       hosts: [],
       total: 1000,
       pageSize: 10,
@@ -80,7 +85,7 @@ export default {
     ssh_host: function(row) {
       axios.get('/api/hosts/' + row.ID + '/ssh', {
         headers: {
-          'Access-Control-Allow-Origin': 'http://localhost:8084'
+          'Access-Control-Allow-Origin': 'http://www.wllinux.com:8084'
           }
       })
     },
@@ -95,32 +100,16 @@ export default {
     },
     delete_host: function(index, row) {
       hostService.delUserHost(row.ID).then(
-          (response) => {
-            console.log(response)
+          () => {
             this.hosts.splice(index, 1)
-          }, (error) => {
-            this.content =
-                (error.response &&
-                error.response.data &&
-                error.response.data.message) ||
-                error.message ||
-                error.toString();
-      })
+          })
     },
 
     get_user_hosts: function () {
       hostService.getUserHosts(this.currentPage, this.pageSize).then(
           (response) => {
-            console.log(response)
-            this.hosts = response.data.rows
-            this.total = response.data.total
-          }, (error) => {
-            this.content =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                error.message ||
-                error.toString();
+            this.hosts = response.data.data.rows
+            this.total = response.data.data.total
           })
     },
 
@@ -149,5 +138,4 @@ td {
 .demo-pagination-block .pagination {
   margin-bottom: 16px;
 }
-
 </style>

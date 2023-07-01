@@ -13,11 +13,10 @@
       <el-button type="text" @click="$router.back()">返回上一步</el-button>
     </el-form-item>
   </el-form>
-
 </template>
 
 <script>
-import axios from "axios";
+import UserService from "@/services/user.service";
 
 export default {
   name: "UserEdit",
@@ -29,36 +28,19 @@ export default {
 
   methods: {
     onSubmit: function() {
-      axios.put('/api/users/' + this.$route.params.id,{
-        UserName: this.user.UserName,
-        Password: this.user.Password,
-      }, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      } ).then((response) => {
-        console.log(response)
-        alert('修改成功')
-        this.$router.go(-1)
-      }, (response) => {
-        console.error(response)
-        alert('修改失败')
-      })
+      UserService.updateUser(this.user.id, this.user.UserName, this.user.Password).then(
+          () => {
+            alert('更新用户成功')
+            this.$router.go(-1)
+          })
     },
   },
 
-  mounted: function() {
-    // http://localhost:9550/user/edit/2
-    // 同样的,this.$route.query.id 如果这样访问的话users?id=2
-    axios.get('/api/users/' + this.$route.params.id).then((response => {
-      console.info(response.data)
-      this.user = response.data.user
-    }), (response) => {
-      console.error(response)
+  created: function() {
+    UserService.showUser(this.$route.params.id).then((response) => {
+      this.user = response.data.data
     })
-
   }
-
 }
 </script>
 

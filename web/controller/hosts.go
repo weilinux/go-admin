@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/weilinux/go-gin-skeleton-auth/model"
+	"github.com/weilinux/go-gin-skeleton-auth/pkg/errcode"
 	"github.com/weilinux/go-gin-skeleton-auth/web/session"
 	"net/http"
 	"strconv"
@@ -15,6 +15,7 @@ type hostAssignment struct {
 }
 
 func GetBindHosts(c *gin.Context) {
+	response := NewResponse(c)
 	// old sytle get username
 	// user, _ := model.FindUserByName(session.GetUser(c))
 
@@ -25,10 +26,8 @@ func GetBindHosts(c *gin.Context) {
 	}
 	user, err := model.FindUserByName(username)
 	if err != nil {
-		fmt.Println(err.Error())
+		response.ToErrorResponse(errcode.NotFound.WithDetails(err.Error()))
 	}
-	// session.SetCookieLogin(c)
-	// user, err := model.FindUserByName(session.GetUser(c))
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
@@ -40,40 +39,41 @@ func GetBindHosts(c *gin.Context) {
 		"total":    count,
 		"UserName": session.GetUser(c),
 	}
-	c.JSON(http.StatusOK, data)
+	response.ToResponse(SuccessResponse{
+		Data: data,
+	})
 }
 
 func GetUnBindHosts(c *gin.Context) {
+	response := NewResponse(c)
 	// user, _ := model.FindUserByName(session.GetUser(c))
 	// username, _ := c.Get("username")
 	id := c.Param("id")
 	ID, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-
+		response.ToErrorResponse(errcode.NotFound.WithDetails(err.Error()))
 	}
 	data := map[string]interface{}{
 		"status":   "UP",
 		"rows":     model.GetUserUnbindHosts(ID),
 		"UserName": session.GetUser(c),
 	}
-	c.JSON(http.StatusOK, data)
+	response.ToResponse(SuccessResponse{Data: data})
 }
 
 func DeleteHost(c *gin.Context) {
+	response := NewResponse(c)
 	id := c.Param("id")
-	if ID, err := strconv.ParseInt(id, 10, 64); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-	} else {
-		_ = model.DeleteHost(ID)
+	ID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		response.ToErrorResponse(errcode.NotFound.WithDetails(err.Error()))
 	}
+	_ = model.DeleteHost(ID)
+	response.ToResponse(SuccessResponse{Msg: "删除主机成功"})
 }
 
 func EditHost(c *gin.Context) {
+	response := NewResponse(c)
 	var host = &model.Host{}
 
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -97,64 +97,54 @@ func EditHost(c *gin.Context) {
 	// model.DBM.Model(&model.Host{}).Where("id= ?", id).Update(&hostDetails)
 	db.Save(&hostDetails)
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "host updated",
-		"host":    hostDetails,
+	response.ToResponse(SuccessResponse{
+		Msg:  "修改主机成功",
+		Data: hostDetails,
 	})
-	return
 }
 
 func HostInfo(c *gin.Context) {
+	response := NewResponse(c)
 	id := c.Param("id")
-	if ID, err := strconv.ParseInt(id, 10, 64); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-	} else {
-		host, _ := model.GetHostById(ID)
-		data := map[string]interface{}{
-			"host": host,
-		}
-		c.JSON(http.StatusOK, data)
+	ID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		response.ToErrorResponse(errcode.NotFound.WithDetails(err.Error()))
 	}
-
+	host, _ := model.GetHostById(ID)
+	response.ToResponse(SuccessResponse{
+		Code: 0,
+		Data: host,
+	})
 }
 
 func AddHost(c *gin.Context) {
+	response := NewResponse(c)
 	var host model.Host
 	host.HostName = c.PostForm("HostName")
 	host.HostIP = c.PostForm("HostIP")
 	host.HostPort, _ = strconv.Atoi(c.PostForm("HostPort"))
 	host.CreateHost()
-	data := map[string]interface{}{
-		"host": host,
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"data": data,
+	response.ToResponse(SuccessResponse{
+		Msg:  "添加主机成功",
+		Data: host,
 	})
-	return
 }
 
 func AssignHost(c *gin.Context) {
-	// userId := c.PostForm("user")
-	// id, _ := strconv.ParseInt(userId, 10, 64)
-	// hostIds := c.PostFormArray("hosts")
-	// var userId int64 = 100
-	// hostIds := []int64{1, 2, 3}
+	response := NewResponse(c)
 
 	var ha hostAssignment
 	if err := c.ShouldBindJSON(&ha); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		response.ToErrorResponse(errcode.InvalidParams.WithDetails(err.Error()))
 	}
 	userId := ha.UserId
 	hostIds := ha.HostIds
 
 	err := model.HostAssignment(userId, hostIds)
 	if err != nil {
-		fmt.Println(err.Error())
+		response.ToErrorResponse(errcode.Fail.WithDetails(err.Error()))
 	}
+	response.ToResponse(SuccessResponse{Msg: "分配主机成功"})
 }
 
 func SshHost(c *gin.Context) {

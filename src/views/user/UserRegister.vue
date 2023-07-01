@@ -2,45 +2,44 @@
   <div>
     <div>
       <div class="subTitle">加入我们，一起创造美好世界</div>
-      <h1 class="title">创建账号</h1>
+      <h1 class="title">注册账号</h1>
       <div v-for="(item, index) in fields" v-bind:key="item"  class="inputContainer">
         <div class="field">{{item.title}} <span v-if="item.required" style="color: red;">*</span></div>
         <input v-model="item.model" class="input" :type="item.type" />
-        <div class="tip" v-if="index == 2">请确认密码程度需要大于1位</div>
+        <div class="tip" v-if="index === 2">请确认密码程度需要大于1位</div>
       </div>
-      <button @click="createAccount" class="btn">创建账号</button>
+      <button @click="createAccount" class="btn">注册</button>
     </div>
   </div>
-
 </template>
 
 <script>
-import axios from 'axios'
+import UserService from '@/services/user.service';
 
 export default {
   name: "RegisterForm",
   data: function() {
-   return {
-     fields:[
-       {
-         title:"用户名",
-         required:true,
-         type:"text",
-         model:""
-       },{
-         title:"邮箱地址",
-         required:false,
-         type:"text",
-         model:""
-       },{
-         title:"密码",
-         required:true,
-         type:"password",
-         model:""
-       }
-     ],
-     receiveMsg:false
-   }
+    return {
+      fields:[
+        {
+          title:"用户名",
+          required:true,
+          type:"text",
+          model:""
+        },{
+          title:"邮箱地址",
+          required:false,
+          type:"text",
+          model:""
+        },{
+          title:"密码",
+          required:true,
+          type:"password",
+          model:""
+        }
+      ],
+      receiveMsg:false
+    }
   },
   computed:{
     name: {
@@ -90,29 +89,14 @@ export default {
         return
       }
 
-      axios.post('/api/signup',
-          {
-            UserName: this.name,
-            Password: this.password,
-          },{
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }
-          }
-      ).then((response) => {
-            alert("提交成功!, 刚才提交的内容是：" + response.data.UserName  +  response.data.Password)
-          }, (response) => {
-            alert('error occuring')
-            console.error(response)
-          }
-      )
-
-      alert("注册成功")
-      console.log(`name:${this.name}\npassword:${this.password}\nemail:${this.email}\nreceiveMsg:${this.receiveMsg}`)
+      UserService.signupUser(this.name, this.password).then(() => {
+        alert("注册成功")
+        this.$router.push("/login")
+      }, (error) => {
+        console.error(error)
+      })
     }
-
   }
-
 }
 </script>
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const API_URL = 'http://localhost:9550/api/';
-const API_URL = 'http://localhost:9550/';
+// const API_URL = 'http://www.wllinux.com:9550/api/';
+const API_URL = 'http://www.wllinux.com:9550/';
 
 class AuthService {
     login(user) {
@@ -15,9 +15,9 @@ class AuthService {
                 }
             })
             .then(response => {
-                if (response.data.Token) {
+                if (response.data.data.Token) {
                     // localStorage.setItem('user', JSON.stringify(response.data));
-                    localStorage.setItem('Token', JSON.stringify(response.data));
+                    localStorage.setItem('Token', JSON.stringify(response.data.data))
                 }
                 return response.data;
             });

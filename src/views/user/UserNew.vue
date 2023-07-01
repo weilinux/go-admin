@@ -16,11 +16,10 @@
       <el-button type="text" @click="$router.back()">返回上一步</el-button>
     </el-form-item>
   </el-form>
-
 </template>
 
 <script>
-import axios from "axios";
+import UserService from '@/services/user.service';
 
 export default {
   name: "UserEdit",
@@ -32,23 +31,13 @@ export default {
 
   methods: {
     onSubmit: function() {
-      axios.post('/api/users',{
-        ID: this.user.id,
-        UserName: this.user.UserName,
-        Password: this.user.Password,
-      }, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      } ).then((response) => {
-        console.log(response)
-        alert('添加成功')
-        this.$router.go(-1)
-      }, (response) => {
-        console.error(response)
-        alert('添加失败')
-      })
-    },
+      UserService.addUser(this.user.id, this.user.UserName, this.user.Password).then(
+          (response) => {
+            console.log(response)
+            alert('添加用户成功')
+          }
+      )
+    }
   }
 
 }

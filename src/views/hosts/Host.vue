@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import hostService from "@/services/host.service";
 
 export default {
   name: "HostEdit",
@@ -32,17 +32,11 @@ export default {
   },
 
   mounted: function() {
-    // http://localhost:9550/host/edit/2
-    // 同样的,this.$route.query.id 如果这样访问的话hosts?id=2
-    axios.get('/api/hosts/' + this.$route.params.id).then((response => {
-      console.info(response.data)
-      this.host = response.data.host
-    }), (response) => {
-      console.error(response)
+    hostService.getHost(this.$route.params.id).then((response) => {
+      this.host = response.data.data
+      console.log(response)
     })
-
   }
-
 }
 </script>
 
@@ -57,6 +51,4 @@ export default {
 .margin-top {
   margin-top: 20px;
 }
-
-
 </style>

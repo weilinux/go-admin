@@ -41,6 +41,7 @@
 <script>
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "Login",
@@ -79,14 +80,16 @@ export default {
           () => {
             this.$router.push("/main");
           },
-          (error) => {
+          () => {
             this.loading = false;
-            this.message =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                error.message ||
-                error.toString();
+            // this.message =
+                // (error.response &&
+                //     error.response.data.data &&
+                //     error.response.data.data.msg) ||
+                // error.message ||
+                // error.toString();
+            //TODO: 认证失败超过5次则一小时禁止登录
+            ElMessage.error("用户认证失败!")
           }
       );
     },

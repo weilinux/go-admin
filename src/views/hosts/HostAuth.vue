@@ -31,9 +31,7 @@
   <div style="margin-top: 80px;" >
     <el-button type="primary" @click="onSubmit">授权</el-button>
     <el-button type="text" @click="$router.back()" style="align: left">返回上一步</el-button>
-
   </div>
-
 
   <div style="margin-bottom: 80px;" >
     <h3 align="center">主机解绑</h3>
@@ -42,8 +40,9 @@
 </template>
 
 <script>
-import axios from "axios";
-import authHeader from "@/services/auth-header";
+import UserService from "@/services/user.service";
+import HostAssignService from "@/services/hostAssign.service";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "HostEdit",
@@ -58,40 +57,22 @@ export default {
 
   methods: {
     onSubmit: function() {
-      let header = authHeader()
-      header["Content-Type"]  = "application/json"
-      axios.post('/api/hosts/assign', {
-        "user_id": this.user,
-        "host_id": this.hosts
-      }).then((response) => {
-        console.log(response)
-      }, (response => {
-        console.error(response)
-      }))
+      HostAssignService.assignHost(this.user, this.hosts).then(() => {
+        ElMessage.success("分配主机成功!")
+      })
     },
 
     changeValue: function() {
-      axios.get('/api/users/' + this.user + '/hosts').then((response) => {
-        console.log(response)
-        this.hostList = response.data.rows
-      }, (response) => {
-        console.error(response)
+      HostAssignService.getUnbindHosts(this.user).then((response) => {
+        this.hostList = response.data.data.rows
       })
     }
   },
 
-  mounted: function() {
-    axios.get('/api/users').then((response) => {
-          //成功后的callback
-          console.log(response)
-          //把远程返回的结果(JSON) 赋予到本地, JS支持JSON
-          this.userList = response.data.rows
-        }, (response) => {
-          //失败后的callback
-          console.error(response)
-        }
-    )
-
+  created: function() {
+    UserService.getUserList().then((response) => {
+      this.userList = response.data.data.rows
+    })
   }
 }
 </script>

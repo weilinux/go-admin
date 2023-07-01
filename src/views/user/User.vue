@@ -10,14 +10,11 @@
     <el-descriptions-item label="用户名" label-align="right" align="center">{{ user.UserName }}</el-descriptions-item>
     <el-descriptions-item label="用户密码" label-align="right" align="center">{{ user.Password }}</el-descriptions-item>
   </el-descriptions>
-
   <el-button type="text" @click="$router.back()">返回上一步</el-button>
-
 </template>
 
-
 <script>
-import axios from 'axios'
+import UserService from '@/services/user.service';
 
 export default {
   data: function() {
@@ -26,17 +23,10 @@ export default {
     }
   },
   mounted: function() {
-    // http://localhost:9550/user/edit/2
-    // 同样的,this.$route.query.id 如果这样访问的话users?id=2
-    axios.get('/api/users/' + this.$route.params.id).then((response => {
-      console.info(response.data)
-      this.user = response.data.user
-    }), (response) => {
-      console.error(response)
+    UserService.showUser(this.$route.params.id).then((response) => {
+      this.user = response.data.data
     })
   },
-  components: {
-  }
 }
 </script>
 
