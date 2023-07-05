@@ -15,7 +15,7 @@
             :unique-opened="true">
           <el-menu-item index="/main">概览</el-menu-item>
 
-          <el-menu-item index="/log">软件仓库</el-menu-item>
+          <el-menu-item index="/app">软件仓库</el-menu-item>
           <el-sub-menu index="3">
             <template #title>主机管理</template>
             <el-menu-item index="/hosts">列表</el-menu-item>
@@ -25,19 +25,19 @@
           </el-sub-menu>
           <el-sub-menu index="4">
             <template #title>中间件</template>
-            <el-menu-item index="/database">数据库</el-menu-item>
+            <el-menu-item index="/middle">数据库</el-menu-item>
 <!--            <el-menu-item index="4-2">Redis数据库</el-menu-item>-->
             <el-menu-item index="4-3">RabbitMQ</el-menu-item>
 <!--            <el-menu-item index="4-4">Mongo数据库</el-menu-item>-->
           </el-sub-menu>
-          <el-menu-item index="4">容器管理</el-menu-item>
-          <el-menu-item index="5">计划任务</el-menu-item>
+          <el-menu-item index="/container">容器管理</el-menu-item>
+          <el-menu-item index="/schedular">计划任务</el-menu-item>
 
           <el-menu-item index="/log">日志审计</el-menu-item>
           <el-sub-menu index="8">
             <template #title>权限管理</template>
             <el-menu-item index="/users">用户列表</el-menu-item>
-            <el-menu-item index="/login">角色管理</el-menu-item>
+            <el-menu-item index="/roles">角色管理</el-menu-item>
             <el-menu-item index="/register">菜单管理</el-menu-item>
           </el-sub-menu>
         </el-menu>

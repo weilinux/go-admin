@@ -11,13 +11,9 @@
       <el-form-item>
         <el-button @click="handleFilter">查询</el-button>
       </el-form-item>
-      <el-form-item>
-        <el-button @click="add_host">新增主机</el-button>
-      </el-form-item>
     </el-form>
+    <el-button @click="add_host">新增主机</el-button>
   </div>
-
-
 
   <el-table :data="hosts" style="width: 100%;" height="460">
     <el-table-column type="index" label="序号" width="80" />

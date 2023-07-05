@@ -2,6 +2,20 @@
 <div>
     {{ title }}
 </div>
+  <div class="flex">
+    <el-form :model="searchForm" inline>
+      <el-form-item label="用户名称">
+        <el-input v-model="user" placeholder="输入用户名称查询"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="handleFilter">查询</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="add_user">新增用户</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+
   <el-table :data="users" style="width: 100%" height="250">
     <el-table-column type="index" label="序号" width="120" />
     <el-table-column prop="id" label="用户编号" width="120" />
@@ -27,11 +41,11 @@
       </template>
     </el-table-column>
   </el-table>
-  <el-button class="mt-4" style="width: 10%;align: right"  @click="add_user">添加</el-button>
 </template>
 
 <script>
 import UserService from '@/services/user.service';
+import { ElMessageBox } from 'element-plus';
 
 export default {
   data: function() {
@@ -51,11 +65,18 @@ export default {
       this.$router.push({name: 'UserNew'})
     },
     delete_user: function(index, row) {
-      UserService.delUser(row.id).then(() => {
-        this.users.splice(index, 1)
-      }, (error) => {
-        console.log(error.toString())
+      ElMessageBox.confirm("确实要删除这个用户吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      }).then(() => {
+        UserService.delUser(row.id).then(() => {
+          this.users.splice(index, 1)
+        })
+        alert("删除成功!");
       })
+        .catch(() => {
+          alert("取消删除!");
+        })
     },
     get_users: function() {
       UserService.getUserList().then(response => {
@@ -74,5 +95,10 @@ export default {
 <style scoped>
 td {
   border: 3px solid grey;
+}
+.flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>
