@@ -4,10 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"github.com/weilinux/go-gin-skeleton-auth/model/mysql"
 )
 
-// Apart from being an excellent ORM for Go developers, its built to be developer-friendly
+// Apart from being an excellent ORM for Go developers, it's built to be developer-friendly
 // and easy to comprehend. Gorm is built on top of the database/sql packages.
 // overview and features of the ORM are:
 // Developer Friendly
@@ -16,7 +15,7 @@ import (
 // Eager loading with Preload, Joins
 // Context, Prepared Statement Mode, DryRun Mode
 // SQL Builder, Upsert, Locking, Optimizer/Index/Comment Hints, Named Argument, SubQuery
-// Transactions, Nested Transactions, Save Point, Rollback To to Saved Point
+// Transactions, Nested Transactions, Save Point, Rollback to Saved Point
 // Associations (Has One, Has Many, Belongs To, Many To Many, Polymorphism)
 // SQL Builder
 // Logger
@@ -31,15 +30,9 @@ func (u *User) TableName() string {
 	return "go_admin_" + "user"
 }
 
-func init() {
-	mysql.Connect()
-	DBM = mysql.GetDB()
-	DBM.AutoMigrate(&User{}, &Role{}, &Host{}, &UserRole{})
-}
-
 func FindUserByName(userName string) (User, error) {
 	var user User
-	result := DBM.Where("user_name = ?", userName).First(&user)
+	result := db.Where("user_name = ?", userName).First(&user)
 	if result.RowsAffected < 1 {
 		return user, errors.New("user does not exist")
 	}
@@ -49,7 +42,7 @@ func FindUserByName(userName string) (User, error) {
 func CreateUser(user User) (User, error) {
 	// TODO: 使用GORM的方式来创建记录，参考链接https://medium.com/@itskenzylimon/getting-started-on-golang-gorm-af49381caf3f
 	// TODO: 使用GORM的方式来创建记录，参考链接https://medium.com/@itskenzylimon/getting-started-on-golang-gorm-af49381caf3f
-	result := DBM.Create(&user)
+	result := db.Create(&user)
 	if result.Error != nil {
 		return User{}, result.Error
 	}
@@ -58,20 +51,20 @@ func CreateUser(user User) (User, error) {
 
 func GetAllUsers() []User {
 	var users []User
-	DBM.Find(&users)
+	db.Find(&users)
 	return users
 }
 
 func GetUserById(Id int64) (*User, *gorm.DB) {
 	var user User
-	db := DBM.Where("id = ?", Id).Find(&user)
+	db := db.Where("id = ?", Id).Find(&user)
 	return &user, db
 }
 
 func DeleteUser(Id int64) User {
 	var getUser User
 	// 物理删除 ,gorm软删除，硬删除, Unscoped无关，这里必须是指针
-	if err := DBM.Where("id = ?", Id).Delete(&getUser).Error; err != nil {
+	if err := db.Where("id = ?", Id).Delete(&getUser).Error; err != nil {
 		fmt.Println(err.Error())
 	}
 	return getUser
@@ -80,10 +73,6 @@ func DeleteUser(Id int64) User {
 // TODO: add support https://gitee.com/GoProgect/ginBlog/blob/master/model/User.go
 // TODO: add support https://gitee.com/GoProgect/ginBlog/blob/master/model/User.go
 // TODO: add support https://gitee.com/GoProgect/ginBlog/blob/master/model/User.go
-
-// func UpdateUser(username string, user User) User {
-//
-// }
 
 func UserExists(userInput User) bool {
 	if _, err := FindUserByName(userInput.UserName); err != nil {

@@ -94,7 +94,7 @@ func EditHost(c *gin.Context) {
 		hostDetails.HostPort = host.HostPort
 	}
 
-	// model.DBM.Model(&model.Host{}).Where("id= ?", id).Update(&hostDetails)
+	// model.db.Model(&model.Host{}).Where("id= ?", id).Update(&hostDetails)
 	db.Save(&hostDetails)
 
 	response.ToResponse(SuccessResponse{
@@ -163,12 +163,6 @@ func SshHost(c *gin.Context) {
 		})
 
 	}
-
-	// c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-	// c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-	// c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-	// c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
-
 	sshAccessPath := "http://" + host.HostIP + ":3003/wetty"
 	c.Redirect(http.StatusFound, sshAccessPath)
 }

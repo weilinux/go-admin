@@ -3,8 +3,9 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql" // init()
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/weilinux/go-gin-skeleton-auth/model"
 )
 
 var (
@@ -32,18 +33,24 @@ func InitMySQL() (err error) {
 	return
 }
 
-func Connect() {
-	d, err := gorm.Open("mysql", "root:111000!Wei@tcp(47.92.27.135:3306)/godb2?charset=utf8mb4&parseTime=True&loc=Local")
+func ConnectDatabase() {
+	mysql, err := gorm.Open("mysql", "root:111000!Wei@tcp(47.92.27.135:3306)/godb2?charset=utf8mb4&parseTime=True&loc=Local")
 	if err != nil {
-		panic(err)
+		panic("连接数据库失败!")
 	}
-	db = d
+
+	tables := model.Initialize(mysql)
+	SyncTables(mysql, tables)
+	db = mysql
 }
 
-func GetDB() *gorm.DB {
-	return db
+func SyncTables(db *gorm.DB, tables []interface{}) {
+	if err := db.AutoMigrate(tables...).Error; err != nil {
+		fmt.Println(err.Error())
+		panic("初始化表结构失败!")
+	}
 }
 
-func GetDb() *sql.DB {
-	return Db
+func CloseDatabase() error {
+	return db.DB().Close()
 }

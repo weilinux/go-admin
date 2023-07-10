@@ -1,27 +1,38 @@
 package model
 
 import (
+	"github.com/jinzhu/gorm"
 	"time"
 )
 
-// AppInfo app git info
-//
-//	{
-//		"version": "@pkg_version",
-//		"tag": "@pkg_branch_alias_version",
-//		"releaseAt": "@pkg_release_date"
-//	}
+var (
+	db *gorm.DB
+)
+
 type AppInfo struct {
 	Tag       string `json:"tag" description:"get tag name"`
 	Version   string `json:"version" description:"git repo version."`
 	ReleaseAt string `json:"releaseAt" description:"latest commit date"`
 }
 
-// 基底建立不好
+// ID int64  `gorm:"column:id;AUTO_INCREMENT;comment:主键" `
+// ID        uint `gorm:"primary_key"` from Tencent
+
 type Model struct {
-	ID          int       `gorm:"primary_key" json:"id"`
+	ID          int       `gorm:"primary_key;column:id;" json:"id"`
 	CreatedTime time.Time `json:"created_time" gorm:"column:created_time"`
 	UpdatedTime time.Time `json:"updated_time" gorm:"column:updated_time"`
+}
+
+func Initialize(mysql *gorm.DB) []interface{} {
+	db = mysql
+	return []interface{}{
+		&User{},
+		&Role{},
+		&Host{},
+		&UserRole{},
+		&Menu{},
+	}
 }
 
 // func (m *Model) BeforeUpdate(db *gorm.DB) error {

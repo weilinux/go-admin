@@ -25,6 +25,8 @@ func init() {
 
 	err = mysql.InitMySQL()
 	checkError("Db init error:", err)
+
+	mysql.ConnectDatabase()
 	//
 	// err = mongo.InitMongo()
 	// checkError("Mgo init error:", err)
@@ -39,6 +41,7 @@ func main() {
 
 	web.Run()
 	defer myrds.ClosePool()
+	defer mysql.CloseDatabase()
 }
 
 func checkError(prefix string, err error) {

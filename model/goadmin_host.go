@@ -1,19 +1,12 @@
 package model
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"github.com/weilinux/go-gin-skeleton-auth/model/mysql"
 	"net"
 )
 
 // Host 代码的形式化越优秀，说明代码越符合代码级别的CURD
-
-var DBM *gorm.DB
-
-var DbM *sql.DB
-
 type Host struct {
 	gorm.Model
 	HostName     string
@@ -27,14 +20,6 @@ type Host struct {
 
 func (h *Host) TableName() string {
 	return "go_admin_" + "host"
-}
-
-func init() {
-	mysql.Connect()
-	DBM = mysql.GetDB()
-	DBM.AutoMigrate(&Host{})
-	DBM.AutoMigrate(&User{})
-	DbM = mysql.GetDb()
 }
 
 func (h *Host) IsAlive() bool {
@@ -67,8 +52,8 @@ func (h Host) audit() error {
 
 // CreateHost CURD
 func (h *Host) CreateHost() *Host {
-	if DBM.NewRecord(h) {
-		if count := DBM.Create(&h).RowsAffected; count != 1 {
+	if db.NewRecord(h) {
+		if count := db.Create(&h).RowsAffected; count != 1 {
 			fmt.Printf("new record failed\n")
 			return nil
 		}
@@ -84,7 +69,7 @@ func GetUserHosts(id int, page, limit int) ([]Host, int) {
 	var hosts []Host
 	var count int
 
-	if err := DBM.
+	if err := db.
 		Table("go_admin_host").
 		Joins(" INNER JOIN go_admin_host_user on go_admin_host.id = go_admin_host_user.host_id ").
 		Where("go_admin_host_user.user_id = ? AND go_admin_host.deleted_at is NULL", id).
@@ -94,7 +79,6 @@ func GetUserHosts(id int, page, limit int) ([]Host, int) {
 		Find(&hosts).Error; err != nil {
 		fmt.Printf("Query: %v\n", err)
 	}
-
 	return hosts, count
 }
 
@@ -102,8 +86,8 @@ func GetUserHosts(id int, page, limit int) ([]Host, int) {
 func GetUserUnbindHosts(id int64) []Host {
 	var hosts []Host
 
-	sub := DBM.Table("go_admin_host_user").Select("host_id").Where("user_id = ?", id).SubQuery()
-	if err := DBM.
+	sub := db.Table("go_admin_host_user").Select("host_id").Where("user_id = ?", id).SubQuery()
+	if err := db.
 		Table("go_admin_host").
 		Where("deleted_at is NUll AND id NOT IN ?", sub).
 		Find(&hosts).Error; err != nil {
@@ -114,29 +98,26 @@ func GetUserUnbindHosts(id int64) []Host {
 
 func GetHostById(Id int64) (*Host, *gorm.DB) {
 	var host Host
-	// 这个是系统的db的时候，为什么会导致记录更新之后只有一条了, 要重要定义一个db,不是全局的db
-	db := DBM.Where("id = ?", Id).Find(&host)
+	db := db.Where("id = ?", Id).Find(&host)
 	return &host, db
 }
 
-// DeleteHost CURD
 func DeleteHost(Id int64) Host {
 	var getHost Host
-	if err := DBM.Where("id = ?", Id).Delete(getHost).Error; err != nil {
+	if err := db.Where("id = ?", Id).Delete(getHost).Error; err != nil {
 		fmt.Println(err.Error())
 	}
 	return getHost
 }
 
 func HostAssignment(userId int64, hostIds []int64) error {
+	// TODO: 这里是否可以考虑进行批量的插入记录呢
 	sqlStr := `insert into go_admin_host_user(host_id, user_id) values(?, ?)`
 	for _, hostId := range hostIds {
-		_, err := mysql.Db.Exec(sqlStr, hostId, userId)
-		if err != nil {
+		if err := db.Exec(sqlStr, hostId, userId).Error; err != nil {
 			fmt.Printf("Insert failed: %v", err)
 			return err
 		}
-
 	}
 	return nil
 }
