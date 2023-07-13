@@ -1,0 +1,95 @@
+<template>
+  <!--  <div style="margin-bottom: 80px;" class="d-flex justify-content-center align-items-center container ">-->
+  <div style="margin-bottom: 80px;">
+    <h3 align="center">主机授权</h3>
+  </div>
+
+  <div style="display: inline-block">
+    <p style="margin-left: 10px; text-align: left;">用户</p>
+    <el-select v-model="user" class="m-2" placeholder="请选择" @change="changeValue" size="large">
+      <el-option
+          v-for="item in userList"
+          :key="item.value"
+          :label="item.UserName"
+          :value="item.id"
+      />
+    </el-select>
+  </div>
+
+  <div style="display: inline-block; margin-left: 20px">
+    <p style="margin-left: 10px; text-align: left;">主机</p>
+    <el-select v-model="hosts" class="m-2" multiple placeholder="请选择" size="large">
+      <el-option
+          v-for="item in hostList"
+          :key="item.value"
+          :label="item.HostName"
+          :value="item.ID"
+      />
+    </el-select>
+  </div>
+
+  <div style="margin-top: 80px;">
+    <el-button type="primary" @click="onSubmit">授权</el-button>
+    <el-button type="text" @click="$router.back()" style="align: left">返回上一步</el-button>
+  </div>
+
+  <div style="margin-bottom: 80px;">
+    <h3 align="center">主机解绑</h3>
+  </div>
+
+</template>
+
+<script>
+import UserService from "@/services/user.service";
+import HostAssignService from "@/services/hostAssign.service";
+import {ElMessage} from "element-plus";
+
+export default {
+  name: "HostEdit",
+  data: function () {
+    return {
+      hostList: [],
+      userList: [],
+      user: '',
+      hosts: '',
+    }
+  },
+
+  methods: {
+    onSubmit: function () {
+      HostAssignService.assignHost(this.user, this.hosts).then(() => {
+        ElMessage.success("分配主机成功!")
+      })
+    },
+
+    changeValue: function () {
+      HostAssignService.getUnbindHosts(this.user).then((response) => {
+        this.hostList = response.data.data.rows
+      })
+    }
+  },
+
+  created: function () {
+    UserService.getUserList().then((response) => {
+      this.userList = response.data.data.rows
+    })
+  }
+}
+</script>
+
+<style scoped>
+.el-descriptions {
+  margin-top: 20px;
+}
+
+.cell-item {
+  display: flex;
+  align-items: center;
+}
+
+.margin-top {
+  margin-top: 20px;
+}
+
+
+</style>
