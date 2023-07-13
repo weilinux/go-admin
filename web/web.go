@@ -7,6 +7,7 @@ import (
 	"github.com/gookit/color"
 	"github.com/weilinux/go-gin-skeleton-auth/app"
 	"github.com/weilinux/go-gin-skeleton-auth/web/middleware"
+	"github.com/weilinux/go-gin-skeleton-auth/web/router"
 	"io/fs"
 	"log"
 	"net/http"
@@ -56,7 +57,7 @@ func InitServer(staticFS embed.FS) {
 	// Session middleware is applied to all groups after this point.
 	// r.Use(middleware.Session(db))
 
-	AddRoutes(server)
+	router.AddRoutes(server)
 }
 
 func Run() {
