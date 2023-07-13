@@ -1,4 +1,4 @@
-package web
+package router
 
 import (
 	"github.com/arl/statsviz"
@@ -39,40 +39,62 @@ func AddRoutes(r *gin.Engine) {
 	noAuth.Use(middleware.Sensitive())
 	// noAuth.Use(middleware.NoAuth())
 	noAuth.Use(middleware.Cors())
-	noAuth.GET("/", controller.Home)
-	// status
-	noAuth.GET("/health", controller.AppHealth)
-	noAuth.GET("/status", controller.AppStatus)
 
-	noAuth.POST("/login", controller.UserLogin)
-	noAuth.POST("/signup", controller.UserSignup)
+	index := noAuth.Group("/")
+	{
+		index.GET("/", controller.Home)
+		index.GET("/health", controller.AppHealth)
+		index.GET("/status", controller.AppStatus)
+		index.POST("/login", controller.UserLogin)
+		index.POST("/signup", controller.UserSignup)
+		// 终端管理
+		index.GET("/ws", controller.ShellWs)
+	}
 
 	// admin for user login
-	admin := r.Group("/")
+	admin := r.Group("/api/v1")
 	admin.Use(middleware.Auth())
 	admin.Use(middleware.Sensitive())
 	admin.Use(middleware.Cors())
+
 	admin.GET("/logout", controller.UserLogout)
-
 	// 用户管理
-	admin.GET("/users", controller.GetUsers)
-	admin.DELETE("/users/:id", controller.DeleteUser)
-	admin.PUT("/users/:id", controller.EditUser)
-	admin.GET("/users/:id", controller.UserInfo)
-	admin.POST("/users", controller.AddUser)
-	// TODO: implement 权限管理
+	user := admin.Group("/")
+	{
+		user.GET("/users", controller.GetUsers)
+		user.DELETE("/users/:id", controller.DeleteUser)
+		user.PUT("/users/:id", controller.EditUser)
+		user.GET("/users/:id", controller.UserInfo)
+		user.POST("/users", controller.AddUser)
+	}
+	// 角色管理
+	role := admin.Group("/")
+	{
+		role.GET("/roles", controller.GetRoles)
+		role.DELETE("/roles/:id", controller.DeleteRole)
+		role.PUT("/roles/:id", controller.EditRole)
+		role.GET("/roles/:id", controller.RoleInfo)
+		role.POST("/roles", controller.AddRole)
+	}
+	// 主机管理
+	host := admin.Group("/")
+	{
+		host.GET("/users/hosts", controller.GetBindHosts)
+		host.GET("/users/:id/hosts", controller.GetUnBindHosts)
+		host.DELETE("/hosts/:id", controller.DeleteHost)
+		host.PUT("/hosts/:id", controller.EditHost)
+		host.GET("/hosts/:id", controller.HostInfo)
+		host.POST("/hosts", controller.AddHost)
+		host.POST("/hosts/assign", controller.AssignHost)
 
-	admin.GET("/users/hosts", controller.GetBindHosts)
-	admin.GET("/users/:id/hosts", controller.GetUnBindHosts)
-	admin.DELETE("/hosts/:id", controller.DeleteHost)
-	admin.PUT("/hosts/:id", controller.EditHost)
-	admin.GET("/hosts/:id", controller.HostInfo)
-	admin.POST("/hosts", controller.AddHost)
-	admin.POST("/hosts/assign", controller.AssignHost)
+	}
 
 	// TODO: add 新开tab的标题应该是服务器的主机名称
-	admin.GET("/hosts/:id/ssh", controller.SshHost)
-	admin.GET("/host/:id/metrics", controller.MonitorHosts)
+	xterm := admin.Group("/")
+	{
+		xterm.GET("/hosts/:id/ssh", controller.SshHost)
+		xterm.GET("/host/:id/metrics", controller.MonitorHosts)
+	}
 
 	// 查询配置
 	internal := new(controller.InternalApi)
