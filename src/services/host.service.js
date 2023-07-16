@@ -52,6 +52,19 @@ class HostService {
             }
         })
     }
+    //搜索
+    searchHosts(host, page, limit) {
+        return request({
+            url: '/api/users/searchhost?',
+            method: 'get',
+            params: {
+                host: host,
+                page: page,
+                limit: limit
+            }
+        })
+    }
+
 }
 
 export default new HostService();

@@ -132,10 +132,18 @@ export default {
     },
 
     handleSizeChange: function () {
-      this.get_user_hosts()
+      this.host ? this.handleFilter(): this.get_user_hosts()
     },
     handleCurrentChange: function () {
-      this.get_user_hosts()
+      this.host ? this.handleFilter(): this.get_user_hosts()
+    },
+    
+    handleFilter: function () {
+      hostService.searchHosts(this.host, this.currentPage, this.pageSize).then(
+          (response) => {
+            this.hosts = response.data.data.rows
+            this.total = response.data.data.total
+          })
     }
   },
 

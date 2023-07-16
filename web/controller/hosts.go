@@ -44,6 +44,33 @@ func GetBindHosts(c *gin.Context) {
 	})
 }
 
+func SearchHosts(c *gin.Context) {
+	response := NewResponse(c)
+	var username string
+	if user, ok := c.Get("username"); ok == true {
+		username = user.(string)
+	}
+	user, err := model.FindUserByName(username)
+	if err != nil {
+		response.ToErrorResponse(errcode.NotFound.WithDetails(err.Error()))
+	}
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	host := c.DefaultQuery("host", "")
+
+	rows, count := model.GetUserFilterHosts(user.ID, host, page, limit)
+	data := map[string]interface{}{
+		"status":   "UP",
+		"rows":     rows,
+		"total":    count,
+		"UserName": session.GetUser(c),
+	}
+	response.ToResponse(SuccessResponse{
+		Data: data,
+	})
+}
+
 func GetUnBindHosts(c *gin.Context) {
 	response := NewResponse(c)
 	// user, _ := model.FindUserByName(session.GetUser(c))

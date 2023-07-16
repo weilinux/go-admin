@@ -82,6 +82,24 @@ func GetUserHosts(id int, page, limit int) ([]Host, int) {
 	return hosts, count
 }
 
+func GetUserFilterHosts(id int, host string, page, limit int) ([]Host, int) {
+	// https://github.com/go-gorm/gorm/issues/2994
+	var hosts []Host
+	var count int
+
+	if err := db.
+		Table("go_admin_host").
+		Joins(" INNER JOIN go_admin_host_user on go_admin_host.id = go_admin_host_user.host_id ").
+		Where("go_admin_host_user.user_id = ? AND go_admin_host.deleted_at is NULL AND go_admin_host.host_name LIKE ? ", id, "%"+host+"%").
+		Count(&count).
+		Offset((page - 1) * limit).
+		Limit(limit).
+		Find(&hosts).Error; err != nil {
+		fmt.Printf("Query: %v\n", err)
+	}
+	return hosts, count
+}
+
 // GetUserUnbindHosts 如果没有用户id的话来进行全局查找, 所以这里不需要这个新的函数
 func GetUserUnbindHosts(id int64) []Host {
 	var hosts []Host
