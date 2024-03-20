@@ -14,7 +14,7 @@ func GetUser(c *gin.Context) string {
 	if err != nil {
 		cookie = uuid.NewV4().String()
 	}
-	c.SetCookie("session2", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("session2", cookie, 3600, "/", "www.wllinux.com", false, true)
 
 	u := DbSessions[cookie]
 
@@ -26,8 +26,8 @@ func GetUser(c *gin.Context) string {
 
 func SetCookieLogin(c *gin.Context) {
 	cookie := uuid.NewV4().String()
-	// c.SetCookie("session2", cookie, 3600, "/", "localhost", false, true)
+	// c.SetCookie("session2", cookie, 3600, "/", "www.wllinux.com", false, true)
 	DbSessions[cookie] = c.PostForm("UserName")
-	c.SetCookie("session", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("session", cookie, 3600, "/", "www.wllinux.com", false, true)
 	return
 }

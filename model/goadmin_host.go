@@ -2,13 +2,13 @@ package model
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"net"
 )
 
 // Host 代码的形式化越优秀，说明代码越符合代码级别的CURD
 type Host struct {
-	gorm.Model
+	*Model
 	HostName     string
 	HostPort     int
 	HostUser     string
@@ -51,28 +51,40 @@ func (h Host) audit() error {
 }
 
 // CreateHost CURD
-func (h *Host) CreateHost() *Host {
-	if db.NewRecord(h) {
-		if count := db.Create(&h).RowsAffected; count != 1 {
-			fmt.Printf("new record failed\n")
-			return nil
-		}
-	} else {
-		return nil
+func (h *Host) CreateHost() (*Host, error) {
+	result := db.Create(&h)
+	if result.Error != nil {
+		return &Host{}, result.Error
 	}
-	return h
+	return h, nil
+
+	// if count := db.Create(&h).RowsAffected; count != 1 {
+	// 	fmt.Printf("new record failed\n")
+	// 	return nil
+	// }
+	// return h
+
+	// if db.NewRecord(h) {
+	// 	if count := db.Create(&h).RowsAffected; count != 1 {
+	// 		fmt.Printf("new record failed\n")
+	// 		return nil
+	// 	}
+	// } else {
+	// 	return nil
+	// }
+	// return h
 }
 
 // GetUserHosts CURD ,
-func GetUserHosts(id int, page, limit int) ([]Host, int) {
+func GetUserHosts(id uint, page, limit int) ([]Host, int64) {
 	// https://github.com/go-gorm/gorm/issues/2994
 	var hosts []Host
-	var count int
+	var count int64
 
 	if err := db.
 		Table("go_admin_host").
 		Joins(" INNER JOIN go_admin_host_user on go_admin_host.id = go_admin_host_user.host_id ").
-		Where("go_admin_host_user.user_id = ? AND go_admin_host.deleted_at is NULL", id).
+		Where("go_admin_host_user.user_id = ?", id).
 		Count(&count).
 		Offset((page - 1) * limit).
 		Limit(limit).
@@ -82,15 +94,15 @@ func GetUserHosts(id int, page, limit int) ([]Host, int) {
 	return hosts, count
 }
 
-func GetUserFilterHosts(id int, host string, page, limit int) ([]Host, int) {
+func GetUserFilterHosts(id uint, host string, page, limit int) ([]Host, int64) {
 	// https://github.com/go-gorm/gorm/issues/2994
 	var hosts []Host
-	var count int
+	var count int64
 
 	if err := db.
 		Table("go_admin_host").
 		Joins(" INNER JOIN go_admin_host_user on go_admin_host.id = go_admin_host_user.host_id ").
-		Where("go_admin_host_user.user_id = ? AND go_admin_host.deleted_at is NULL AND go_admin_host.host_name LIKE ? ", id, "%"+host+"%").
+		Where("go_admin_host_user.user_id = ? AND go_admin_host.host_name LIKE ? ", id, "%"+host+"%").
 		Count(&count).
 		Offset((page - 1) * limit).
 		Limit(limit).
@@ -104,7 +116,7 @@ func GetUserFilterHosts(id int, host string, page, limit int) ([]Host, int) {
 func GetUserUnbindHosts(id int64) []Host {
 	var hosts []Host
 
-	sub := db.Table("go_admin_host_user").Select("host_id").Where("user_id = ?", id).SubQuery()
+	sub := db.Table("go_admin_host_user").Select("host_id").Where("user_id = ?", id)
 	if err := db.
 		Table("go_admin_host").
 		Where("deleted_at is NUll AND id NOT IN ?", sub).

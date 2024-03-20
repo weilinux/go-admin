@@ -1,6 +1,21 @@
 info:
   contact: {}
 paths:
+  /api/v1/users/hosts:
+    get:
+      description: get user host info
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: body
+      summary: 获取用户主机信息
+      tags:
+      - InternalApi
   /health:
     get:
       description: get app health

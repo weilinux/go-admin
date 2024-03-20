@@ -3,11 +3,11 @@ package model
 import (
 	"errors"
 	"fmt"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
-// Apart from being an excellent ORM for Go developers, it's built to be developer-friendly
-// and easy to comprehend. Gorm is built on top of the database/sql packages.
+// Apart from being an excellent ORM for:uu Go developers, it's built to be developer-friendly
+// and easy to comprehenkkkd. Gorm is built on top of the database/sql packages.
 // overview and features of the ORM are:
 // Developer Friendly
 // Every feature comes with a tests
@@ -23,11 +23,27 @@ import (
 type User struct {
 	*Model
 	UserName string
-	Password string
+	Password string `json:"-"`
+	RoleID   uint
+	Role     Role `json:"role"`
+	// RoleID uint `gorm:"column:role_id;" json:"role_id"`
+	// Role   Role `gorm:"foreignKey:RoleID;References:Id" json:"role"`
 }
 
 func (u *User) TableName() string {
 	return "go_admin_" + "user"
+}
+
+func (u *User) Count(db *gorm.DB) int64 {
+	var total int64
+	db.Model(&User{}).Count(&total)
+	return total
+}
+
+func (u *User) Take(db *gorm.DB, limit int, offset int) interface{} {
+	var users []User
+	db.Table("go_admin_user").Preload("Role").Offset(offset).Limit(limit).Find(&users)
+	return users
 }
 
 func FindUserByName(userName string) (User, error) {
@@ -49,15 +65,15 @@ func CreateUser(user User) (User, error) {
 	return user, result.Error
 }
 
-func GetAllUsers() []User {
-	var users []User
-	db.Find(&users)
-	return users
-}
+// Optimi: 优化用户查询
+// user := models.User{
+// Id: uint(id),
+// }
+// database.DB.Preload("Role").Find(&user)
 
 func GetUserById(Id int64) (*User, *gorm.DB) {
 	var user User
-	db := db.Where("id = ?", Id).Find(&user)
+	db := db.Preload("Role").Where("id = ?", Id).Find(&user)
 	return &user, db
 }
 
@@ -68,6 +84,19 @@ func DeleteUser(Id int64) User {
 		fmt.Println(err.Error())
 	}
 	return getUser
+}
+
+// ChangePassword 修改密码
+func ChangePassword(id int, data *User) int {
+	// // var user User
+	// var maps = make(map[string]interface{})
+	// maps["password"] = data.Password
+	//
+	// if err := db.Select("password").Where("id = ?", id).Updates(&data).Error; err != nil {
+	// 	return errmsg.ERROR
+	// }
+	// return errmsg.SUCCSE
+	return 0
 }
 
 // TODO: add support https://gitee.com/GoProgect/ginBlog/blob/master/model/User.go

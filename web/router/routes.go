@@ -11,10 +11,6 @@ import (
 	"net/http"
 )
 
-// TODO: add 跨域，jwt认证 https://gitee.com/GoProgect/ginBlog/blob/master/routers/router.go
-// TODO: add 跨域，jwt认证 https://gitee.com/GoProgect/ginBlog/blob/master/routers/router.go
-// TODO: add 跨域，jwt认证 https://gitee.com/GoProgect/ginBlog/blob/master/routers/router.go
-
 func AddRoutes(r *gin.Engine) {
 	statics.SwaggerInfo.BasePath = "/"
 
@@ -66,6 +62,9 @@ func AddRoutes(r *gin.Engine) {
 		user.PUT("/users/:id", controller.EditUser)
 		user.GET("/users/:id", controller.UserInfo)
 		user.POST("/users", controller.AddUser)
+		user.GET("user/profile/:id", controller.GetUserProfile)
+		user.PUT("user/profile/:id", controller.UpdateUserProfile)
+		user.PUT("user/changepw/:id", controller.ChangeUserPassword)
 	}
 	// 角色管理
 	role := admin.Group("/")
@@ -76,10 +75,18 @@ func AddRoutes(r *gin.Engine) {
 		role.GET("/roles/:id", controller.RoleInfo)
 		role.POST("/roles", controller.AddRole)
 	}
+
+	// 权限管理
+	permission := admin.Group("/")
+	{
+		permission.GET("/permissions", controller.GetPermissions)
+	}
+
 	// 主机管理
 	host := admin.Group("/")
 	{
 		host.GET("/users/hosts", controller.GetBindHosts)
+		host.GET("/users/searchhost", controller.SearchHosts)
 		host.GET("/users/:id/hosts", controller.GetUnBindHosts)
 		host.DELETE("/hosts/:id", controller.DeleteHost)
 		host.PUT("/hosts/:id", controller.EditHost)
@@ -93,12 +100,17 @@ func AddRoutes(r *gin.Engine) {
 	xterm := admin.Group("/")
 	{
 		xterm.GET("/hosts/:id/ssh", controller.SshHost)
-		xterm.GET("/host/:id/metrics", controller.MonitorHosts)
+		// xterm.GET("/host/:id/metrics", controller.MonitorHosts)
+		r.GET("/host/metrics", controller.MonitorHosts)
+		xterm.GET("/host/metrics", controller.MonitorHosts)
 	}
 
 	// 查询配置
 	internal := new(controller.InternalApi)
 	r.GET("/config", internal.Config)
+
+	// 上传文件
+	admin.POST("upload", controller.Upload)
 
 	// 优化找不到页面显示的错误
 	r.NoRoute(func(c *gin.Context) {

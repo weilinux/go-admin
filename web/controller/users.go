@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/weilinux/go-gin-skeleton-auth/model"
+	"github.com/weilinux/go-gin-skeleton-auth/pkg/errcode"
 	"github.com/weilinux/go-gin-skeleton-auth/web/middleware"
 	"github.com/weilinux/go-gin-skeleton-auth/web/session"
 	"net/http"
@@ -12,35 +13,25 @@ import (
 	"time"
 )
 
-// UserLogin
-// # Step 1: Add a ```login.gohtml``` page.
-// # Step 2: Handle the submission of a login form
-// # Step 3: A fake user was added to dbUsers in func init
-// # Step 4: md5 Password
-// # STEP 5: cookie mechanism Session ID
 func UserLogin(c *gin.Context) {
+	response := NewResponse(c)
 	var userInput model.User
 	userInput.UserName = c.PostForm("UserName")
 	userInput.Password = c.PostForm("Password")
 
 	if UserAuth(userInput) {
 		session.SetCookieLogin(c)
-
 		token, err := generateJWT(userInput.UserName)
 		if err != nil {
-			fmt.Println("error generating token")
+			response.ToErrorResponse(errcode.Fail.WithDetails(err.Error()))
 		}
-		c.JSON(http.StatusOK, gin.H{
+		data := map[string]interface{}{
 			"UserName": userInput.UserName,
-			"Password": userInput.Password,
 			"Token":    token,
-		})
-		// return
+		}
+		response.ToResponse(SuccessResponse{Data: data})
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"UserName": userInput.UserName,
-		})
-		// return
+		response.ToErrorResponse(errcode.Fail.WithDetails("用户认证失败!!!"))
 	}
 }
 
@@ -54,7 +45,7 @@ func UserLogout(c *gin.Context) {
 		return
 	}
 	delete(session.DbSessions, cookie)
-	c.SetCookie("session", "", -1, "/", "localhost", false, true)
+	c.SetCookie("session", "", -1, "/", "www.wllinux.com", false, true)
 
 	c.Redirect(http.StatusSeeOther, "/login")
 }
@@ -74,68 +65,50 @@ func UserLogout(c *gin.Context) {
 // 	c.Redirect(http.StatusSeeOther, "/login")
 // }
 
-// TODO: add jwt authentication
-
 func UserSignup(c *gin.Context) {
+	response := NewResponse(c)
 	var userInput model.User
 	userInput.UserName = c.PostForm("UserName")
 	userInput.Password = c.PostForm("Password")
 
 	if model.UserExists(userInput) {
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "user already exists",
-		})
+		response.ToErrorResponse(errcode.ErrorExistUserFail)
 		return
 	}
 
-	if _, err := model.CreateUser(model.User{
+	_, err := model.CreateUser(model.User{
+		Model: &model.Model{
+			CreatedTime: time.Now(),
+			UpdatedTime: time.Now(),
+		},
 		UserName: userInput.UserName,
 		Password: string(generatedHash([]byte(userInput.Password))),
-	}); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Insert user failed",
-		})
+	})
+	if err != nil {
+		response.ToErrorResponse(errcode.ErrorCreateUserFail)
 	}
-
-	c.Redirect(http.StatusSeeOther, "/")
-	return
-
+	response.ToResponse(SuccessResponse{Code: 200})
 }
 
-// different between session and cookie
-// 1 session server side; cookie client side
-// 2 session dependent on Cookie, but Cookie is not dependent on session
-// 3 session end where browser closed; cookie expires by lifetime you set
-// 4 during session you can store as much as you want, but max size for cookie is 4KB
-// 5 you can use session functions to deal with session, but cookie is not
-
-// session
-// session是服务端存储的一个全局变量，每个session有一个独特的ID，用来取值。
-// 当一个session创建的时候，a cookie(包含了session id)会保存在客户端，并且跟请求一起发送到服务端。
-// 如果客户端不支持Cookie, 那这个unique session id 会显示在URL中。
-// The session values are automatically deleted when the browser is closed. If you
-// want to store the values permanently, then you should store them in the database.
-
-// cookie
-// Once a cookie has been set, all page requests that follow return the cookie name and value
-// cookie 不能跨域  A cookie can only be read from the domain that it has been issued from
-
 func DeleteUser(c *gin.Context) {
+	response := NewResponse(c)
 	id := c.Param("id")
-	if ID, err := strconv.ParseInt(id, 10, 64); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-	} else {
-		_ = model.DeleteUser(ID)
+	ID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		response.ToErrorResponse(errcode.InvalidParams)
+		return
 	}
+	// TODO: 这个删除不一定成功执行的, 需要后面的接口返回错误进行检查
+	_ = model.DeleteUser(ID)
+	response.ToResponse(SuccessResponse{
+		Msg: "删除用户成功",
+	})
 }
 
 func EditUser(c *gin.Context) {
-	// var user = &model.User{}
-
+	response := NewResponse(c)
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	user := &model.User{Model: &model.Model{ID: int(ID)}}
+	user := &model.User{Model: &model.Model{ID: uint(ID)}}
 
 	user.UserName = c.PostForm("UserName")
 	user.Password = c.PostForm("Password")
@@ -147,15 +120,17 @@ func EditUser(c *gin.Context) {
 	if user.Password != "" {
 		userDetails.Password = user.Password
 	}
+
+	// TODO: 修改用户成功后, update time没有更新!
 	db.Save(&userDetails)
-	c.JSON(http.StatusOK, gin.H{
-		"message": "user updated",
-		"user":    userDetails,
+	response.ToResponse(SuccessResponse{
+		Msg:  "修改用户配置成功",
+		Data: userDetails,
 	})
-	return
 }
 
 func AddUser(c *gin.Context) {
+	response := NewResponse(c)
 	var user = &model.User{}
 	user.UserName = c.PostForm("UserName")
 	user.Password = c.PostForm("Password")
@@ -163,45 +138,132 @@ func AddUser(c *gin.Context) {
 	id, _ := strconv.Atoi(ID)
 
 	if model.UserExists(*user) {
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "user already exists",
-		})
+		response.ToErrorResponse(errcode.ErrorCreateUserFail)
 		return
 	}
 
-	if _, err := model.CreateUser(model.User{
+	_, err := model.CreateUser(model.User{
 		Model: &model.Model{
-			ID:          id,
+			ID:          uint(id),
 			CreatedTime: time.Now(),
 			UpdatedTime: time.Now(),
 		},
 		UserName: user.UserName,
 		Password: string(generatedHash([]byte(user.Password))),
-	}); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Insert user failed",
-		})
+	})
+	if err != nil {
+		response.ToErrorResponse(errcode.Fail.WithDetails(err.Error()))
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": user,
+	response.ToResponse(SuccessResponse{
+		Msg:  "添加用户成功",
+		Data: user,
 	})
 }
 
-// UserInfo TODO: implement 这里需要再做分页
 func UserInfo(c *gin.Context) {
+	response := NewResponse(c)
 	id := c.Param("id")
-	if ID, err := strconv.ParseInt(id, 10, 64); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
-	} else {
-		user, _ := model.GetUserById(ID)
-		data := map[string]interface{}{
-			"user": user,
-		}
-		c.JSON(http.StatusOK, data)
+	ID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		response.ToErrorResponse(errcode.NotFound.WithDetails(err.Error()))
+		return
 	}
+	user, _ := model.GetUserById(ID)
+	response.ToResponse(SuccessResponse{Data: user})
+}
+
+func GetUsers(c *gin.Context) {
+	response := NewResponse(c)
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	rows, count := model.Paginate(&model.User{}, page, limit)
+
+	data := map[string]interface{}{
+		"message": "用户管理界面",
+		"rows":    rows,
+		"total":   count,
+	}
+
+	response.ToResponse(SuccessResponse{
+		Data: data,
+		Code: 200,
+	})
+}
+
+// TODO: 获取个人信息完善
+func GetUserProfile(c *gin.Context) {
+	response := NewResponse(c)
+	id, _ := strconv.Atoi(c.Param("id"))
+	data, code := model.GetUserProfile(id)
+	response.ToResponse(SuccessResponse{Data: data, Code: code})
+}
+
+// Optimi 优化点,更新记录的方式
+// var data map[string]string
+//
+// if err := c.BodyParser(&data); err != nil {
+// return err
+// }
+//
+// cookie := c.Cookies("jwt")
+//
+// id, _ := util.ParseJwt(cookie)
+//
+// userId, _ := strconv.Atoi(id)
+//
+// user := models.User{
+// Id:        uint(userId),
+// FirstName: data["first_name"],
+// LastName:  data["last_name"],
+// Email:     data["email"],
+// }
+//
+// database.DB.Model(&user).Updates(user)
+
+// TODO: 更新个人信息完善
+func UpdateUserProfile(c *gin.Context) {
+	response := NewResponse(c)
+	var data model.Profile
+	id, _ := strconv.Atoi(c.Param("id"))
+	_ = c.ShouldBindJSON(&data)
+
+	code := model.UpdateUserProfile(id, &data)
+
+	response.ToResponse(SuccessResponse{Code: code})
+}
+
+// TODO: 修改用户密码
+func ChangeUserPassword(c *gin.Context) {
+	response := NewResponse(c)
+	var data model.User
+	id, _ := strconv.Atoi(c.Param("id"))
+	_ = c.ShouldBindJSON(&data)
+
+	code := model.ChangePassword(id, &data)
+
+	response.ToResponse(SuccessResponse{Code: code})
+
+	// TODO: 修改用户密码:github td27-admin
+	// var mp systemReq.ModifyPass
+	// _ = c.ShouldBindJSON(&mp)
+	//
+	// // 参数校验
+	// validate := validator.New()
+	// if err := validate.Struct(&mp); err != nil {
+	// 	response.FailWithMessage("请求参数错误", c)
+	// 	global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+	// 	return
+	// }
+	//
+	// if err := userService.ModifyPass(mp); err != nil {
+	// 	response.FailWithMessage("修改失败", c)
+	// 	global.TD27_LOG.Error("修改失败", zap.Error(err))
+	// } else {
+	// 	response.OkWithMessage("修改成功", c)
+	// }
 }
 
 func UserAuth(userInput model.User) bool {
@@ -226,7 +288,7 @@ func generateJWT(username string) (string, error) {
 	tokenString, err := token.SignedString(middleware.SampleSecretKey)
 
 	if err != nil {
-		fmt.Errorf("something Went Wrong: %s", err.Error())
+		_ = fmt.Errorf("something Went Wrong: %s", err.Error())
 		return "", err
 	}
 	return tokenString, nil

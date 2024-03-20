@@ -23,11 +23,6 @@ func init() {
 	err = myrds.InitRedis()
 	checkError("Rds init error:", err)
 
-	err = mysql.InitMySQL()
-	checkError("Db init error:", err)
-
-	mysql.ConnectDatabase()
-	//
 	// err = mongo.InitMongo()
 	// checkError("Mgo init error:", err)
 
@@ -35,13 +30,14 @@ func init() {
 }
 
 func main() {
+	sqlDB := mysql.ConnectDatabase()
 
 	// init services
 	log.Printf("================ Begin Running(PID: %d) ================", os.Getpid())
 
 	web.Run()
 	defer myrds.ClosePool()
-	defer mysql.CloseDatabase()
+	defer mysql.CloseDatabase(sqlDB)
 }
 
 func checkError(prefix string, err error) {

@@ -1,0 +1,22 @@
+//外键处理问题 children(fKey) reference to parent(Key)
+show engine innodb status中的latest foreign key error
+
+
+// 复用与重构
+注意编码的方法：这里可以常常地进行复用
+比如写完用户的CURD之后，再编写product的CURD
+代码 过于类似，所以在这里引入 了interfaces
+
+
+//网络上YP来的代码需要进行严格的验证才能的,才能保证其准确性
+
+
+
+
+GORM v2 一对一关联查询使用(Belongs To 、Has One区别)
+gorm视角里的一对一和一对多都是基于MYSQL的一对多实现的
+https://blog.csdn.net/Douz_lungfish/article/details/121614898
+
+//更好,更快地生成测试用例collection文件
+Convert swagger2 doc into postman2 collection.
+Update Postman collection from openapi file

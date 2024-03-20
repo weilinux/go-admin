@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -71,7 +70,7 @@ func TestHost_IsAlive(t *testing.T) {
 
 func TestHost_CreateHost(t *testing.T) {
 	type fields struct {
-		Model        gorm.Model
+		Model        *Model
 		HostName     string
 		hostip       string
 		HostPort     int

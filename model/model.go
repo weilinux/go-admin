@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -19,20 +19,23 @@ type AppInfo struct {
 // ID        uint `gorm:"primary_key"` from Tencent
 
 type Model struct {
-	ID          int       `gorm:"primary_key;column:id;" json:"id"`
+	ID          uint      `gorm:"primarykey;" json:"id"`
 	CreatedTime time.Time `json:"created_time" gorm:"column:created_time"`
 	UpdatedTime time.Time `json:"updated_time" gorm:"column:updated_time"`
+	// DeletedTime time.Time `json:"deleted_time" gorm:"column:deleted_time"`
 }
 
+// modelDesign -> migrate-> modelController->modelCURD
 func Initialize(mysql *gorm.DB) []interface{} {
 	db = mysql
 	return []interface{}{
+		&Menu{},
 		&User{},
 		&Role{},
+		&Permission{},
 		&Host{},
-		&UserRole{},
-		&Menu{},
 	}
+	// gorm.Migrator.DropColumn(&Menu{}, "deleted_time")
 }
 
 // func (m *Model) BeforeUpdate(db *gorm.DB) error {

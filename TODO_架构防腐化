@@ -1,0 +1,41 @@
+//设计防腐化
+https://github.com/fangyang921017/Software-Architecture-Design
+https://github.com/stevenli91748/Software-Architecture-Design/blob/master/%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E6%98%AF%E6%80%8E%E6%A0%B7%E7%82%BC%E6%88%90%E7%9A%84/README.md
+
+//对于抽象层次的权衡是我们系统设计的关键所在, 也是区分普通程序员和优秀程序员的重要参考指标.
+
+//1）优秀的设计都是需求驱动的，不熟悉需求就做出来的设计是不靠谱的；
+//2）优秀的设计应该是当前团队能理解能实现的，太超前的设计项目团队做不出来，这个设计只能是摆设；
+//3）优秀的设计应充分考虑当前各种限制条件，适当做出平衡，能保证达成项目的目标：
+//4）优秀的设计能尽量降低项目的整体工作量，让整个项目更加可控。
+
+//架构设计要从物理设计的深度来思考，而不能仅仅是理论设计或者是逻辑上的设计，否则又会犯了太空洞的毛病（即“放之四海而皆准”的毛病）。
+
+//小结一下分布式系统的架构设计要点，单机系统也可以参考：
+//1）我们的系统大部分会涉及到多个客户端及服务器，我们需要思考我们的系统需要怎样的客户端及服务器，思考这些设备上面需要安装怎样的操作系统、平台、软件等，思考这些设备需要怎样的硬件配置，如CPU、内存、硬盘大小等等。
+//2）我们需要思考这些客户端及服务器之间的物理联系方式，例如：是局域网方式、互联网，还是两者都支持？是HTTP或是HTTPS？等等。
+//4）思考系统需要开发什么软件和数据库等，这些是第一次对系统各部分的拆分，姑且这叫”第一层的拆解“。
+//5）继续拆解时可参考分层架构，但需要拆分得更加具体，不要犯”放之四海而皆准“的毛病。这个层次的拆解，姑且叫“第二层的拆解”。
+//6）除了规划好内部各部分的关系，还需要规划内部的各部分与外部之间的关系。
+//7）在拆解的过程中，问题会越来越多，也会越来越细，这是正常现象，也是好现象。
+//8）拆解过程中也可能会发现之前初步架构设计中不合理或遗漏的地方，请马上调整；有时候甚至会发现之前的设计完全不对，那么就要有勇气推翻重做。
+//9）“第二层的的拆解”结果有可能是组件（Component）、代码包、某个分层等等，可能是“物理分拆”也可能是“逻辑分拆”。那么“第二层的拆解”要多细才合适呢？其实很难有固定的标准，给一个简单标准作为参考：如果再拆解下去下一步的拆解就到类了，那么就可以认为目前的拆解粒度比较合适了。细化到类的拆解，可以在模块设计（详细设计）中再进一步考虑。
+
+
+
+Section 1: Principles of System Design
+1.1: Modularization
+Dividing the system into smaller, manageable modules help reduce complexity, improve maintainability, and increase reusability.
+1.2: Abstraction
+Hiding the implementation details and showing only the essential features helps simplify complex systems and promote modularity.
+1.3: Layering
+Organizing the system into layers, each layer providing a specific set of functionalities promotes the separation of concerns and enhances maintainability.
+1.4: Scalability
+Design systems to handle the increased load by adding more resources (horizontal scaling) or optimizing the system’s capacity (vertical scaling).
+1.5: Performance
+Optimizing the system’s response time, throughput, and resource utilization is crucial for a successful design.
+1.6: Security
+Ensure the system’s confidentiality, integrity, and availability by implementing proper security measures and practices.
+
+
+// 统计代码中的编程元素的数量，数据上证明优秀代码的元素分布

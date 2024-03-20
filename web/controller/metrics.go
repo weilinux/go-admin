@@ -1,41 +1,69 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
-	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
-	"github.com/weilinux/go-gin-skeleton-auth/model"
+	"io"
+	"log"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
 
+//	func MonitorHosts(c *gin.Context) {
+//		id := c.Param("id")
+//		ID, err := strconv.ParseInt(id, 10, 64)
+//		if err != nil {
+//			c.JSON(http.StatusNotFound, gin.H{
+//				"error": err.Error(),
+//			})
+//		}
+//		hostItem, _ := model.GetHostById(ID)
+//
+//		// fetch hostInfo metrics
+//		hostInfo, err := host.Info()
+//		if err != nil {
+//			fmt.Println("get host info fail, error: ", err)
+//		}
+//		data := map[string]interface{}{
+//			"host":     hostItem,
+//			"hostInfo": hostInfo,
+//		}
+//
+//		c.JSON(http.StatusOK, data)
+//	}
+
+// type InfoStat struct {
 func MonitorHosts(c *gin.Context) {
-	id := c.Param("id")
-	ID, err := strconv.ParseInt(id, 10, 64)
+	response := NewResponse(c)
+	resp, err := http.Get("http://47.92.27.135:3000/api/metrics")
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": err.Error(),
-		})
+		log.Fatalln(err)
 	}
-	hostItem, _ := model.GetHostById(ID)
+	defer resp.Body.Close()
 
-	// fetch hostInfo metrics
-	hostInfo, err := host.Info()
+	body, err := io.ReadAll(resp.Body)
+
 	if err != nil {
-		fmt.Println("get host info fail, error: ", err)
-	}
-	data := map[string]interface{}{
-		"host":     hostItem,
-		"hostInfo": hostInfo,
+		log.Fatalln(err)
 	}
 
-	c.JSON(http.StatusOK, data)
+	var cpu map[string]float32
+
+	err = json.Unmarshal(body, &cpu)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	response.ToResponse(SuccessResponse{
+		Msg:  "135",
+		Data: cpu,
+	})
 }
 
 // type InfoStat struct {

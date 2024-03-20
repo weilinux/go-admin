@@ -1,0 +1,203 @@
+post请求的过程：
+1.浏览器请求tcp连接（第一次握手）
+2.服务器答应进行tcp连接（第二次握手）
+3.浏览器确认，并发送post请求头（第三次握手，这个报文比较小，所以http会在此时进 行第一次数据发送）
+4.服务器返回100 continue响应
+5.浏览器开始发送数据
+6.服务器返回200 ok响应
+
+
+get请求的过程
+1.浏览器请求tcp连接（第一次握手）
+2.服务器答应进行tcp连接（第二次握手）
+3.浏览器确认，并发送get请求头和数据（第三次握手，这个报文比较小，所以http会在此时进行第一次数据发送）
+4.服务器返回200 ok响应。
+
+
+
+//结构体里面有指针就要注意, 不能直接用这个变量（未初始化的)
+
+//golang的结构体指针： 自带指针解引用 (*P).f1 ->p.f1指针可直接访问成员变量
+
+// different between session and cookie
+// 1 session server side; cookie client side
+// 2 session dependent on Cookie, but Cookie is not dependent on session
+// 3 session end where browser closed; cookie expires by lifetime you set
+// 4 during session you can store as much as you want, but max size for cookie is 4KB
+// 5 you can use session functions to deal with session, but cookie is not
+
+// session
+// session是服务端存储的一个全局变量，每个session有一个独特的ID，用来取值。
+// 当一个session创建的时候，a cookie(包含了session id)会保存在客户端，并且跟请求一起发送到服务端。
+// 如果客户端不支持Cookie, 那这个unique session id 会显示在URL中。
+// The session values are automatically deleted when the browser is closed. If you
+// want to store the values permanently, then you should store them in the database.
+
+// cookie
+// Once a cookie has been set, all page requests that follow return the cookie name and value
+// cookie 不能跨域  A cookie can only be read from the domain that it has been issued from
+
+
+//指针变量可以往传，方法尽量不要通过其他包来调用
+//方法尽量只操作自己的变量，
+//尽可能避免使用全局变量
+
+
+
+//当全局变量 TD27_CONFIG 找不到write的语句的时候，请注意搜索 &TD27_CONFIG , &global.TD27_CONFIG
+var (
+	TD27_VP                  *viper.Viper
+	TD27_CONFIG              config.Server
+	TD27_LOG                 *zap.Logger
+	TD27_DB                  *gorm.DB
+	TD27_REDIS               *redis.Client
+	TD27_Concurrency_Control = &singleflight.Group{}
+)
+
+&global.TD27_CONFIG
+
+//Dynamically Table 动态表是什么意思，它的需求与场景是什么样子的呢?
+
+//数据字典
+数据字典是指对数据的数据项、数据结构、数据流、数据存储、处理逻辑、外部实体等进行定义和描述，其目的是对数据流程图中的各个元素作出详细的说明。
+数据字典（Data dictionary）是一种用户可以访问的记录数据库和应用程序源数据的目录。主动数据字典是指在对数据库或应用程序结构进行修改时，其内容可以由DBMS自动更新的数据字典。
+数据字典的主要作用：数据字典和数据流图共同构成系统的逻辑模型。没有流图数据字典难以发挥作用。没有数据字典，数据流图就不严格。
+数据字典的作用以及使用
+在软件开发项目初期就设计一个数据字典，其中包含和项目密切相关的各种结构、类型定义。在开发过程中由项目成员共同维护。它像是一个字典，你可以查询项目中任何你无法理解的各种结构、类型定义、从而最大程度的消除歧义和交流不畅的问题。一个word文档就好，通过代码版本控制共享。
+
+
+
+
+
+5.1 main函数添加全局
+</>code
+// @title smartkm_api_image Swagger Example
+// @version 1.0
+// @description This is a sample server Petstore server.
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host petstore.swagger.io
+// @BasePath /
+func main() {
+// 启动服务
+run()
+}
+
+
+
+5.2 函数级别
+5.2.1 Get请求
+</>code
+// @Summary 查看迁移任务详细信息
+// @Description 查看迁移任务详细信息
+// @Accept json
+// @Produce  json
+// @Param task_id path string true "task_id"
+// @Success 200 {object} models.Response "请求成功"
+// @Failure 400 {object} models.ResponseErr "请求错误"
+// @Failure 500 {object} models.ResponseErr "内部错误"
+// @Router /task [get]
+5.2.2 Post请求
+</>code
+// @Summary 创建镜像迁移任务
+// @Description 创建镜像迁移任务
+// @Accept  json
+// @Produce  json
+// @Param data body models.CreateTaskReq true "请示参数data"
+// @Success 200 {object} models.Response "请求成功"
+// @Failure 400 {object} models.ResponseErr "请求错误"
+// @Failure 500 {object} models.ResponseErr "内部错误"
+// @Router /task [post]
+5.2.3 Delete请求
+</>code
+// @Summary 删除镜像迁移任务
+// @Description 删除镜像迁移任务
+// @Accept  json
+// @Produce  json
+// @Param data body models.TaskReq true "请示参数data"
+// @Success 200 {object} models.Response "请求成功"
+// @Failure 400 {object} models.ResponseErr "请求错误"
+// @Failure 500 {object} models.ResponseErr "内部错误"
+// @Router /task [delete]
+注意事项
+在路由添加swagger的时候，需要引入项目生成的docs包
+假如func方法头标注的swagger注释不正确，在执行swag init会报错，自行根据报错信息去修改；
+访问swagger控制台报错404 page not found，是因为没有添加swagger的路由
+访问swagger控制台报错Failed to load spec，是因为没有import引入执行swag init生成的swagger的docs文件夹；
+
+===
+
+How to use goanno
+1.(control + commend + /) on golang function code
+2.Right click -> Generate -> Goanno
+Feature
+1.Normal function
+2.Interface function
+3.Customer Comment Template
+Now you can select "Tools - Goanno Setting" edit you custom template
+使用此插件可以自动生成函数注释模版
+喜欢本插件，点个星星吧！ github地址
+有bug？点击此处提交
+如何使用
+1.在函数上方点击快捷键(control + commend + /)
+2.右键 -> Generate -> Goanno
+功能
+1.普通函数
+2.接口中的函数
+3.支持自定义模版
+通过Tools-Goanno Setting编辑模版信息
+
+
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+// UserAuthHandler 用户登录
+// @Summary 用户登录
+// @Description 通过邮箱和密码登录，换取token
+// @Accept  json
+// @Produce json
+// @Param email body string true "邮箱"
+// @Param pass body string true "密码"
+// @Success 0 "success"
+// @Failure 500 "error"
+// @Router /user/auth [post]
+func UserAuthHandler(ctx *gin.Context) {
+    // demo
+}
+
+golang中的池化技术：
+池化技术 sync.Pool
+字节数组缓冲区 bytes.Buffer
+io缓冲区 bufio
+
+请说明webhook的技术原理，并使用go语言给出一个案例
+
+与普通变量不同,指针在heap, 大量的指针使用会产生频繁的GC回收过程,影响性能
+
+4 CURD with golang
+database/sql, sqlx, GORM, SQLC(gen go Code)
+
+gorm docs
+https://www.youtube.com/watch?v=IoDqc2HEkZE
+
+外键约束:(DELETE, UPDATE父表对子表的处理方式)
+ON DELETE CASCADE
+ON DELETE SET NULL
+ON DELETE NO ACTION
+We still encourage you to use the relational model and associate tables by
+"pointing" rows from one table to another with foreign keys, just not with the CONSTRAINT ... FOREIGN KEY definition.
+
+Developing an app with no FOREIGN KEY constraints: 就是要变相维持上面需要的表间依赖的处理方式

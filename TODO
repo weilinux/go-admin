@@ -1,26 +1,60 @@
-//定义需求，测试用例，需求优先级
+//需求驱动+代码结构
+//1 定义需求，测试用例，需求优先级
 
-//代码层面：提高效率，代码质量，代码可读+可扩展,
+
+//设计层面: （不谈概要设计，详细设计)
+//架构设计.doc(1)
+//数据库设计 (1)
+//模块设计 (0或N个)
+//用户体验设计 (1)
+
+//3 代码层面：提高效率，代码质量，代码可读+可扩展,
+//关注点分离-> 模块化
+//接口设计与面向接口编程
+//合理的抽象->信息隐藏 ->模块化与接口
+//增量开发，迭代重构
+//通用性设计
+//避免产品运行黑盒，可观测性差，能跑就行
+//降低重复造轮子现象，专注于业务逻辑开发，提升研发效率
 //架构层面：性能，运维, 其他非业务功能与需求,
 
-get system info
-https://www.cnblogs.com/nickchen121/p/11517451.html
+//3.0后端层面:
+//异步机制(MQ机制，代码级机制(响应式编程 async with golang)
+//串行转并行(“预处理")
+//使用资源池(核心资源的预留，避免重建) (注册中心也是这样的思路)(事先准备好的思路)
+//多线程应用 (go多协程技术)
+//热数据缓存(热:根据业务性质和场景判断:例如功能使用率二八分布, 统计频繁更新的数据,不能让此业务的客户查询请求，直接穿透到DB中去查询，销量变化时，主动更新缓存(可考虑非实时))
+//语言级的高性能(设计模式,多协程，异步编程，锁的使用，内存，非阻塞I/O
+//分布式的三驾马车：无状态应用，分布式事务，分布锁
+
+//3.1前端层面：
+//适当使用vuex
+//不要过度使用css框架
+//使用CDN UPYUN, aliyun OSS
+//js,css尽量压缩
+//灵活使用Vue第三方插件, 轮播图，表单验证
+//前端逻辑务必简单
+//行末不用写;
+//灵活使用CSS，HTML 预处理工具
+
+//4 code review维持风格的统一，注意每一个提交的代码的质量
+// Git提交规范
+
+//5 Go-Admin功能特点
+REST架构：采用REST架构，将系统核心和外围服务分离，提高了系统的稳定性和可靠性。
+模块化设计：采用模块化设计，支持动态加载和卸载模块，增强了系统的可扩展性和灵活性。
+实时性能：支持多任务和多线程，并提供了可靠的实时性能保障，满足各种实时控制应用的需求。
+简单易用：提供了一套简单易用的API和开发工具，方便开发者进行快速开发和调试。
+
+//6 Go-Admin应该场景
+服务器管理
+智能运维
+运维系统
+IT支持
+
+//7 Go-Admin使用方法, 用于把持体系化运维业务的系统支撑
 
 https://blog.moonlightwatch.com/%E4%BB%A3%E7%A0%81%E7%AC%94%E8%AE%B0/2021/01/27/Golang%E8%8E%B7%E5%8F%96%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BF%A1%E6%81%AF.html
-
-
-
-//TODO: get system information
-# get system information
-https://pkg.go.dev/github.com/shirou/gopsutil
-https://www.cnblogs.com/XY-Heruo/p/15679182.html
-https://github.com/shirou/gopsutil
-
-
-// TODO: gin with prometheus library 如何集成监控进来，并且扩展监控以及动态化显示 业务大盘
-// gin with prometheus library 如何集成监控进来，并且扩展监控以及动态化显示 业务大盘
-// gin with prometheus library 如何集成监控进来，并且扩展监控以及动态化显示 业务大盘
-//https://www.jianshu.com/p/e42d95c25f18
 
 
 //--------------------------------frontend---------------------------//
@@ -31,43 +65,39 @@ https://github.com/shirou/gopsutil
 
 #把那个tcping功能先集成进来
 
-#先注意于编码的实现，而不是关于功能的设计上.
-
-
 //当前主机服务状态， 当前主机端口状态，进行一个统计与检查，并能够主动报警
 ，如果异常情况发生的话, 并且在定程度上可以进行自动修改
 
-
 //删除基础表的记录的时候，要先推动是否在联合表中被引用，否则造成数据库问题
-//
 
-//做一些后台运维操作的，自动化，半自动化的开发 mysql backup,
-mysql restore
-
-// 用户的权限,vuex根据用户的权限信息，来加载不同的路由
+// 用户的权限,vuex根据用户的权限信息，来加载不同的路由, 使用pinia
 // https://www.jianshu.com/p/81dad9261fce
 
 //jwt功能改进,参考如下项目进行改造 /data/codebase/go-api-tech/jwt-auth
 
-
-//Axios封装请求后端接口
-//https://blog.51cto.com/u_15709205/5447641?articleABtest=0
-
-
-//页面久了token过期了，要检测要，同时把页面转回vue未登录状态中去
-
-
 //上传文件至服务器，特定目录下面
 //https://gin-gonic.com/docs/examples/upload-file/
 
-
-//实时在页面上显示服务器的性能指标, 能够动态展示指标
-
-
-//token过期的处理：
+//token过期的处理(返回403)
 方案一：当我们操作某个需要token作为请求头的接口时，返回的数据错误error.response.status === 401，
 说明我们的token已经过期了。我们希望当响应返回的数据是401身份过期时，让当前浏览页面强行跳转到登入页面，
 让用户手动更新token。拿到最新的token值后再跳回之前浏览的页面。增强用户体验。
+
+// Response interceptor for API calls
+axiosApiInstance.interceptors.response.use((response) => {
+  return response
+}, async function (error) {
+  const originalRequest = error.config;
+  if (error.response.status === 403 && !originalRequest._retry) {
+    originalRequest._retry = true;
+    const access_token = await refreshAccessToken();
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
+    return axiosApiInstance(originalRequest);
+  }
+  return Promise.reject(error);
+});
+The response interceptor checks to see if the API returned a 403 status due to an expired token. If so, it calls a function to refresh the access token which it uses for its call. That function (refreshAccessToken) is an Axios call to the auth service on the API which returns and stores the token and refreshtoken in Redis.
+
 
 方案二：实现用户无感知的刷新token值,我们希望当响应返回的数据是401身份过期时，响应阻拦器自动帮我们刷新token值
 ，而不是让用户手动更新token。拿到最新的token值后再重新发起刚刚因token过期的请求。从而实现无感知
@@ -76,36 +106,17 @@ https://blog.csdn.net/GTbond/article/details/122124609
 https://www.zadmei.com/vtdgqwtj.html
 
 
-//详情页，添加搜索框
-
 //详情页，添加 page header?
 
-
 //滚动显示日志， 可暂停，可搜索关键字,可限制时间段（从页面时间组件选择时间范围)
-
 
 //动态的数据流
 //测试：添加可观测性功能，如不断添加记录（条目), 假设为日志记录，出发生严重的错误， 就发送golang邮件通知，并在页面通知显示有邮件通知到达
 
-
-//用户角色表
-
 //打开新页面时，有一个标签，这个可用于关闭页面，或者 返回页面，而不需重新发起请求
-
-
-//用户注册时 提交的结构体与，前端查询时的CURD的结构体应该是不同的，需要修正
-
-
-//把 get, post put的vue请求封装起来
-
+https://www.bookstack.cn/read/element-plus-2.2-zh/fe67f1fa6b93704f.md
 
 //打开exe 的ftp客户端程序，进行文件传输的功能
-
-//host asssign 的axios请求提取出去
-
-
-// 完美表结构， 请参考别人的项目
-https://github.com/mwqnice/oh-admin/blob/main/oh-admin.sql
 
 //把 存储以注入的方式写入，然后调用其存储的层
 type APIServer struct {
@@ -117,15 +128,143 @@ type APIServer struct {
 
 //go本地缓存，分面式缓存
 
+// 优化
+//使用缓存提高效率。在存储的整个体系中到处可见缓存的思想，Go内存分配和管理也使用了缓存，利用缓存一是减少了系统调用的次数，二是降低了锁的粒度，减少加锁的次数，从这2点提高了内存管理效率。
+//以空间换时间，提高内存管理效率。空间换时间是一种常用的性能优化思想，这种思想其实非常普遍，比如Hash、Map、二叉排序树等数据结构的本质就是空间换时间，在数据库中也很常见，比如数据库索引、索引视图和数据缓存等，再如Redis等缓存数据库也是空间换时间的思想。
 
-//调用堆栈出错打印 trace() print
+//主页显示概览: 当前系统的主要的情况，和系统主机的状态（图), 系统信息(hostname, os-version, kernel, os, boot-time, run-time)
 
-
-
-
-
-
-
-
+//需求了解，参考其他的系统https://demo.1panel.cn/logs/operation
+//日志审计
 
 
+//全局限流中间件
+https://github.com/KingWQ/go-api-demo/blob/master/routes/api.go
+
+//captcha,sms, verifycode, 可参考
+
+//验证签名
+https://github.com/go-leo/api-signer
+
+
+// 通过sql 生成 数据裤操作接口
+https://github.com/go-leo/sqlgen
+
+//skywalking
+https://github.com/trunglv2018/iam-api/blob/main/middlewares/skywalker.go
+
+//recovery Middleware
+
+//别人的优秀的UserList.vue, 注意它的async function方式和它的数据加载的方式
+https://github.com/rundeck/rundeck/blob/da893a2ba5a63ecfb8983ea41fe26a4ce7197102/rundeckapp/grails-spa/src/pages/menu/components/userSummary.vue#L255
+
+
+//容器管理
+https://github.com/Tundara/Go-DockerManager
+
+//避免返回的时候，重新请求后端接口, 比如hostlist
+
+
+//数据库，在vue中打开terminal, 或者通过点击按键连接终端
+
+
+//中间件的tab，点击两次会回到初始页面，无tab加载了
+
+//普通的用户，它们的主机列表后面，没有这个编程与删除的操作
+
+// error code出错码优化一下,与旧有系统处理一处
+
+
+// web terminal含有此功能的框架，找一下
+https://github.com/kataras/iris/blob/c38a9b2459c879fd35007a4527480681a7d04ac0/ssh.go#L614
+
+// 封装问题: 这里是否需要再次封装，如下面一样，而不是直接调用db.Save,这样没有错误返回来的
+//db.Save(&userDetails) 这里是否需要再次封装，如下面一样，而不是直接调用db.Save,这样没有错误返回来的
+//UpdateAdminRole 更新角色
+func (d *Dao) UpdateAdminRole(ctx context.Context, role *model.AdminRole) error {
+	return role.Update(ctx, d.engine)
+}
+
+// controll函数都不是方法，请参考别人的项目，如何注册为方法，然后调用类来进一步的处理，更优雅一些
+
+// 编辑的时候，数据来源不应该再请求后端的数据作为编辑体
+
+// golang后台的大盘页面的实现
+// https://github.com/plutobell/pi-dashboard-go/tree/master
+
+// 前端报错，成功提示统一处理
+import {ElMessage} from "element-plus";
+
+//登录的时候，没有token成功生成的了，也能正常转到main页面， 权限页面需要检测当前是否存在token
+
+//通过打开对话框的方式，来删除数据
+https://stackoverflow.com/questions/51695259/how-to-handle-open-event-in-dialog-component-of-element-ui-vuejs
+//也许删除主机的方式是错误的，不应该再次请求后端取得要删除的数据，应该通过v-model的形式拿到数据
+
+//注意useTableHandlers这个函数在 demo-site中,封装了form提交处理的逻辑
+
+//需求整理: 服务矩阵,应用矩阵,每个APP/Host矩阵, 直观的查看各个服务分页详细
+
+// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+//优化角色,相关代码,特别是其他框架的实现
+
+// 树状表格，递归显示数据, 特别是权限的菜单管理那里，有这个需求
+https://blog.csdn.net/Nichlson/article/details/125727294
+
+//vue.js 3.x elemnt-plus书：172页，讲了表格的CURD常规操作, | 搜索书中的callback关键字(func)
+
+//web ssh 的问题
+http://192.168.2.106:37079/static/terminal.html?hostname=47.92.27.135&port=12137&user=root&password=zaq123@Twiki
+
+//优化routes.go文件的路由注册,参考以下代码
+//https://github.com/1Panel-dev/1Panel/blob/6fea06729e129ac00f99720cfddaa413c1109944/backend/router/entry.go
+
+//计划任务，比如按计划备份数据库, 参考1panel代码的实现
+
+//xtermjs全屏问题处理
+https://www.cnblogs.com/goloving/p/15021509.html
+
+//灰度发布，反向代理, 运维自动化
+https://github.com/leoiceo/OpenSA
+
+//模型的CURD进行进一步的抽象->不需要每个模型都写一扁CURD的代码
+
+// edit方法使用db，这里应该要考虑一下
+
+//可考虑使用https://github.com/gobwas/ws 优化使用一下简洁的websocket库
+https://blog.canopas.com/approach-to-avoid-accessing-variables-globally-in-golang-2019b234762
+
+//vue前端代碼 分页功能过于类似
+
+// 提交表单时，表单校检.注意阅读第六章： 提交前 form validate 方法， 重置时，form's resetFields方法
+
+//P177 开始演示CURD的常规的操作
+
+// web 显示promehteus metrics的数据在vue或者其他的第三方组件的上面:参考下面的
+// 监控的架构与设计的大概 open-monitor, 服务器的性能指标
+// https://github.com/WeBankPartners/open-monitor/blob/master/wiki/install_agent.md
+
+//dashboard面板参考一下这个 https://github.com/knadh/listmonk.git
+
+//以切面编程的方式,统一进行分页处理
+//统一分页的功能请参考一下 https://github.com/sociozat/sociozat/blob/086cebdc4368111841c948582976fbd590757c0d/app/repositories/topic.go
+// func (t TopicRepository) Find(params TopicSearchParams) (models.TopicModel, *pagination.Paginator, error) {
+}
+
+//分页组件: https://github.com/xerardoo/gorm-paginator, 用法在README上面
+// 可以参考一下别人的写的code search about 'pagination.go', 'response.go'
+
+//用户的密码必须符合特定规则，并且登录的时候进行有效的验证(前端二次密码对比, P151,07行)
+
+//服务器 文件上传的功能的实现, 通过scp上传至服务器上面
+//swagger 文档快速生成的方法: refer: https://github.com/eddycjy/go-gin-example/tree/master
+//参考这个家伙对k8s资源的操作 https://github.com/cool-sun/cloudApp/tree/master/k8s
+//规划仪表盘首页，看使用什么UI echart图表工具库?
+//处理一下上传的接口
+//Prometheus 通过 consul 实现自动服务发现 原创
+//连接不上所有的必要的中间件，代码应该给出错误提示，并且退出主程,而不应该在查询发生时才报错
+//搜索主机的时候，页码不对，如果是空的话，就设置它为1
+// bookstore项目的精华在于，cart与order两个对象的管理
+//问题处理：在for循环中使用exec sql, Connection释放不及时的问题
+//SQL 检查并处理 sql防注入的问题

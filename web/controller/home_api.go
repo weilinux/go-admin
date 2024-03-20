@@ -34,7 +34,6 @@ func Home(c *gin.Context) {
 // 	return ginSwagger.WrapHandler(swaggerfiles.Handler)
 // }
 
-// AppHealth
 // @Tags InternalApi
 // @Summary 检测API
 // @Description get app health
@@ -49,7 +48,6 @@ func AppHealth(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-// AppStatus
 // @Tags InternalApi
 // @Summary 状态API
 // @Description get app status

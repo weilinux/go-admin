@@ -14,6 +14,12 @@ type hostAssignment struct {
 	HostIds []int64 `json:"host_id" binding:"required"`
 }
 
+// @Tags InternalApi
+// @Summary 获取用户主机信息
+// @Description get user host info
+// @Success 200 {string} json data
+// @Failure 403 body is empty
+// @Router /api/v1/users/hosts [get]
 func GetBindHosts(c *gin.Context) {
 	response := NewResponse(c)
 	// old sytle get username
@@ -150,7 +156,10 @@ func AddHost(c *gin.Context) {
 	host.HostName = c.PostForm("HostName")
 	host.HostIP = c.PostForm("HostIP")
 	host.HostPort, _ = strconv.Atoi(c.PostForm("HostPort"))
-	host.CreateHost()
+	_, err := host.CreateHost()
+	if err != nil {
+		response.ToErrorResponse(errcode.Fail.WithDetails(err.Error()))
+	}
 	response.ToResponse(SuccessResponse{
 		Msg:  "添加主机成功",
 		Data: host,

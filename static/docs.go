@@ -16,6 +16,29 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/users/hosts": {
+            "get": {
+                "description": "get user host info",
+                "tags": [
+                    "InternalApi"
+                ],
+                "summary": "获取用户主机信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "body"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "get app health",
