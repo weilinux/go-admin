@@ -29,6 +29,23 @@ func getUsernameFromContext(c *gin.Context) (string, bool) {
 	return "", false
 }
 
+func (h *HostApi) GetHosts(c *gin.Context) {
+	response := NewResponse(c)
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	rows, count := model.GetHosts(page, limit)
+	data := map[string]interface{}{
+		"status": "UP",
+		"rows":   rows,
+		"total":  count,
+	}
+	response.ToResponse(SuccessResponse{
+		Data: data,
+	})
+}
+
 // @Tags InternalApi
 // @Summary 获取用户主机信息
 // @Description get user host info

@@ -97,6 +97,7 @@ func AddRoutes(r *gin.Engine) {
 		host.POST("/hosts/assign", hostApi.AssignHost)
 		host.POST("/users/:id/hosts", hostApi.AssignHost)
 
+		host.GET("/hosts", hostApi.GetHosts)
 		host.POST("/hosts", hostApi.AddHost)
 		host.PUT("/hosts/:id", hostApi.EditHost)
 		host.GET("/hosts/:id", hostApi.HostInfo)

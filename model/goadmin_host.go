@@ -75,6 +75,21 @@ func (h *Host) CreateHost() (*Host, error) {
 	// return h
 }
 
+func GetHosts(page, limit int) ([]Host, int64) {
+	var hosts []Host
+	var count int64
+
+	if err := db.
+		Table("go_admin_host").
+		Count(&count).
+		Offset((page - 1) * limit).
+		Limit(limit).
+		Find(&hosts).Error; err != nil {
+		fmt.Printf("Query: %v\n", err)
+	}
+	return hosts, count
+}
+
 // GetUserHosts CURD ,
 func GetUserHosts(id uint, page, limit int) ([]Host, int64) {
 	// https://github.com/go-gorm/gorm/issues/2994
