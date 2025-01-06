@@ -55,22 +55,16 @@ func (h *HostApi) GetHosts(c *gin.Context) {
 func (h *HostApi) GetBindHosts(c *gin.Context) {
 	response := NewResponse(c)
 
-	username, exist := getUsernameFromContext(c)
-	if !exist {
-		response.ToErrorResponse(errcode.NotFound.WithDetails("username not found in context"))
-		return
-	}
-
-	user, err := model.FindUserByName(username)
+	id := c.Param("id")
+	ID, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		response.ToErrorResponse(errcode.NotFound.WithDetails(err.Error()))
-		return
 	}
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
-	rows, count := model.GetUserHosts(user.ID, page, limit)
+	rows, count := model.GetUserHosts(ID, page, limit)
 	data := map[string]interface{}{
 		"status":   "UP",
 		"rows":     rows,

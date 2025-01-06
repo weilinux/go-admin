@@ -91,11 +91,10 @@ func AddRoutes(r *gin.Engine) {
 	hostApi := new(controller.HostApi)
 	host := admin.Group("/")
 	{
-		host.GET("/users/hosts", hostApi.GetBindHosts)
-		host.GET("/users/searchhost", hostApi.SearchHosts)
+		host.GET("/users/:id/hosts", hostApi.GetBindHosts)
 		host.GET("/users/:id/unbindhosts", hostApi.GetUnBindHosts)
-		host.POST("/hosts/assign", hostApi.AssignHost)
 		host.POST("/users/:id/hosts", hostApi.AssignHost)
+		host.GET("/users/searchhost", hostApi.SearchHosts)
 
 		host.GET("/hosts", hostApi.GetHosts)
 		host.POST("/hosts", hostApi.AddHost)

@@ -91,7 +91,7 @@ func GetHosts(page, limit int) ([]Host, int64) {
 }
 
 // GetUserHosts CURD ,
-func GetUserHosts(id uint, page, limit int) ([]Host, int64) {
+func GetUserHosts(id int64, page, limit int) ([]Host, int64) {
 	// https://github.com/go-gorm/gorm/issues/2994
 	var hosts []Host
 	var count int64
