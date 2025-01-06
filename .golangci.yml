@@ -1,0 +1,61 @@
+#https://golangci-lint.run/usage/configuration/
+
+# 使用 golangci-lint 的版本
+linters-settings:
+  golangci-lint:
+    version: "1.42.0"
+
+# 检查哪些 linter
+linters:
+  # golint 可以检查 Go 代码是否符合 Go 官方编码规范，但有时候可能会产生误报。
+  golint:
+    enabled: true   # 是否启用
+    min-confidence: 0.8   # 最小的置信度 (0~1)，即只在高于此阈值的问题上发出警告
+    exclude-rules:   # 排除一些规则
+      - exported
+      - stutters
+  # govet 可以检查 Go 代码中的潜在错误和代码不规范的地方。
+  govet:
+    enabled: true
+    vettool: ""
+  # staticcheck 可以检查 Go 代码中的许多常见错误、代码不规范的地方等。
+  staticcheck:
+    enabled: true
+  # nestif 可以帮助你减少嵌套代码块，并且提高代码可读性和可维护性。
+  nestif:
+    enabled: true
+  # gocritic 是一个高效的代码审查工具，可以检查大量常见的 Go 编程错误。
+  gocritic:
+    enabled: true
+  # goimports 可以自动格式化 Go 代码并管理导入语句（包括添加和删除）。
+  goimports:
+    enabled: true
+  # stylecheck 可以帮助你检查缺少注释、命名不规范等代码风格问题。
+  stylecheck:
+    enabled: true
+
+# 指定哪些目录下的代码需要被检查
+run:
+  paths:
+    - ./...
+
+# 单独指定某些文件或目录的检查配置
+linters-override:
+  testdata:
+    # 关闭所有 linters 在 testdata 目录下的检查
+    enabled: false
+  cmd/:
+    # 针对 cmd 目录下的文件使用特定的 linters 配置
+    golint:
+      min-confidence: 0
+    govet:
+      check-shadowing: false
+
+# 是否在 CI 环境下检查代码
+ci:
+  # 执行所有 lint 操作
+  run:
+    hooks:
+      - command: "make lint"
+  # 只执行指定的 linter
+  skip-install: true

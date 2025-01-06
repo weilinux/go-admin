@@ -201,3 +201,21 @@ We still encourage you to use the relational model and associate tables by
 "pointing" rows from one table to another with foreign keys, just not with the CONSTRAINT ... FOREIGN KEY definition.
 
 Developing an app with no FOREIGN KEY constraints: 就是要变相维持上面需要的表间依赖的处理方式
+
+经过初始的版本之后，我们不断测试，逻辑不断拉紧。也就是逻辑不段的细化。
+1.需求的不断细化，迭代。将伴随的代码的不断重构， 从而使得代码，业务的逻辑不断清晰化，细致化。这是减少bug的一个非常重要的原则 .
+2.需求的不断细化，迭代。将伴随的代码的不断重构， 从而使得代码，业务的逻辑不断清晰化，细致化。这是减少bug的一个非常重要的原则 .
+3.需求的不断细化，迭代。将伴随的代码的不断重构， 从而使得代码，业务的逻辑不断清晰化，细致化。这是减少bug的一个非常重要的原则 .
+4.需求的不断细化，迭代。将伴随的代码的不断重构， 从而使得代码，业务的逻辑不断清晰化，细致化。这是减少bug的一个非常重要的原则 .
+5.需求的不断细化，迭代。将伴随的代码的不断重构， 从而使得代码，业务的逻辑不断清晰化，细致化。这是减少bug的一个非常重要的原则 .
+
+
+缓存的使用是进阶式的，并不是一开始注定就要使用redis 来作Cache的，比如：
+LRU(只是算法) + java堆内存 = 也可实现本地的缓存 -> 非分布式的
+Redis分布式缓存  -> 分布式的缓存
+
+LRU|LRU-k|FIFO|LFU| 2Q | ARC
+
+
+build-X
+https://github.com/XiaomingX/build-your-own-xxx

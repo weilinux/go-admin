@@ -1,6 +1,6 @@
 module github.com/weilinux/go-gin-skeleton-auth
 
-go 1.18
+go 1.21
 
 require (
 	github.com/arl/statsviz v0.5.1

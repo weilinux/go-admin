@@ -3,15 +3,30 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/weilinux/go-gin-skeleton-auth/model"
+	systemReq "github.com/weilinux/go-gin-skeleton-auth/model/system/request"
 	"github.com/weilinux/go-gin-skeleton-auth/pkg/errcode"
 	"github.com/weilinux/go-gin-skeleton-auth/web/session"
 	"net/http"
 	"strconv"
 )
 
+type HostApi struct {
+	BaseApi
+}
+
 type hostAssignment struct {
-	UserId  int64   `json:"user_id" binding:"required"`
-	HostIds []int64 `json:"host_id" binding:"required"`
+	UserId int64 `json:"user_id" binding:"required"`
+	// HostIds []int64 `json:"host_id" binding:"required"`
+	HostId int64 `json:"host_id" binding:"required"`
+}
+
+func getUsernameFromContext(c *gin.Context) (string, bool) {
+	if user, exists := c.Get("username"); exists {
+		// user, ok := u.(*ms.User)
+		v, ok := user.(string)
+		return v, ok
+	}
+	return "", false
 }
 
 // @Tags InternalApi
@@ -20,19 +35,19 @@ type hostAssignment struct {
 // @Success 200 {string} json data
 // @Failure 403 body is empty
 // @Router /api/v1/users/hosts [get]
-func GetBindHosts(c *gin.Context) {
+func (h *HostApi) GetBindHosts(c *gin.Context) {
 	response := NewResponse(c)
-	// old sytle get username
-	// user, _ := model.FindUserByName(session.GetUser(c))
 
-	// 20230505
-	var username string
-	if user, ok := c.Get("username"); ok == true {
-		username = user.(string)
+	username, exist := getUsernameFromContext(c)
+	if !exist {
+		response.ToErrorResponse(errcode.NotFound.WithDetails("username not found in context"))
+		return
 	}
+
 	user, err := model.FindUserByName(username)
 	if err != nil {
 		response.ToErrorResponse(errcode.NotFound.WithDetails(err.Error()))
+		return
 	}
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
@@ -50,15 +65,23 @@ func GetBindHosts(c *gin.Context) {
 	})
 }
 
-func SearchHosts(c *gin.Context) {
+func (h *HostApi) SearchHosts(c *gin.Context) {
 	response := NewResponse(c)
-	var username string
-	if user, ok := c.Get("username"); ok == true {
-		username = user.(string)
+	// var username string
+	// if user, ok := c.Get("username"); ok == true {
+	// 	username = user.(string)
+	// }
+	username, exist := getUsernameFromContext(c)
+
+	if !exist {
+		response.ToErrorResponse(errcode.NotFound.WithDetails("username not found in context"))
+		return
 	}
+
 	user, err := model.FindUserByName(username)
 	if err != nil {
 		response.ToErrorResponse(errcode.NotFound.WithDetails(err.Error()))
+		return
 	}
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
@@ -77,7 +100,7 @@ func SearchHosts(c *gin.Context) {
 	})
 }
 
-func GetUnBindHosts(c *gin.Context) {
+func (h *HostApi) GetUnBindHosts(c *gin.Context) {
 	response := NewResponse(c)
 	// user, _ := model.FindUserByName(session.GetUser(c))
 	// username, _ := c.Get("username")
@@ -94,7 +117,7 @@ func GetUnBindHosts(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Data: data})
 }
 
-func DeleteHost(c *gin.Context) {
+func (h *HostApi) DeleteHost(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
 	ID, err := strconv.ParseInt(id, 10, 64)
@@ -105,26 +128,25 @@ func DeleteHost(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Msg: "删除主机成功"})
 }
 
-func EditHost(c *gin.Context) {
+func (h *HostApi) EditHost(c *gin.Context) {
 	response := NewResponse(c)
-	var host = &model.Host{}
+	var hostUpdates = &systemReq.EditHost{}
 
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	host.ID = uint(ID)
 
-	host.HostName = c.PostForm("HostName")
-	host.HostIP = c.PostForm("HostIP")
-	host.HostPort, _ = strconv.Atoi(c.PostForm("HostPort"))
+	if err := c.ShouldBind(hostUpdates); err != nil {
+		response.ToErrorResponse(errcode.InvalidParams.WithDetails(err.Error()))
+	}
 
 	hostDetails, db := model.GetHostById(ID)
-	if host.HostName != "" {
-		hostDetails.HostName = host.HostName
+	if hostUpdates.HostName != "" {
+		hostDetails.HostName = hostUpdates.HostName
 	}
-	if host.HostIP != "" {
-		hostDetails.HostIP = host.HostIP
+	if hostUpdates.HostIP != "" {
+		hostDetails.HostIP = hostUpdates.HostIP
 	}
-	if host.HostPort != 0 {
-		hostDetails.HostPort = host.HostPort
+	if hostUpdates.HostPort != 0 {
+		hostDetails.HostPort = hostUpdates.HostPort
 	}
 
 	// model.db.Model(&model.Host{}).Where("id= ?", id).Update(&hostDetails)
@@ -136,7 +158,7 @@ func EditHost(c *gin.Context) {
 	})
 }
 
-func HostInfo(c *gin.Context) {
+func (h *HostApi) HostInfo(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
 	ID, err := strconv.ParseInt(id, 10, 64)
@@ -150,7 +172,7 @@ func HostInfo(c *gin.Context) {
 	})
 }
 
-func AddHost(c *gin.Context) {
+func (h *HostApi) AddHost(c *gin.Context) {
 	response := NewResponse(c)
 	var host model.Host
 	host.HostName = c.PostForm("HostName")
@@ -166,7 +188,7 @@ func AddHost(c *gin.Context) {
 	})
 }
 
-func AssignHost(c *gin.Context) {
+func (h *HostApi) AssignHost(c *gin.Context) {
 	response := NewResponse(c)
 
 	var ha hostAssignment
@@ -174,16 +196,17 @@ func AssignHost(c *gin.Context) {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(err.Error()))
 	}
 	userId := ha.UserId
-	hostIds := ha.HostIds
+	// hostIds := ha.HostIds
+	hostId := ha.HostId
 
-	err := model.HostAssignment(userId, hostIds)
+	err := model.HostAssignment(userId, hostId)
 	if err != nil {
 		response.ToErrorResponse(errcode.Fail.WithDetails(err.Error()))
 	}
 	response.ToResponse(SuccessResponse{Msg: "分配主机成功"})
 }
 
-func SshHost(c *gin.Context) {
+func (h *HostApi) SshHost(c *gin.Context) {
 	// TODO: url主机地址加密 https://cloud.tencent.com/developer/article/1469183
 	id := c.Param("id")
 	ID, err := strconv.ParseInt(id, 10, 64)

@@ -36,13 +36,15 @@ func AddRoutes(r *gin.Engine) {
 	// noAuth.Use(middleware.NoAuth())
 	noAuth.Use(middleware.Cors())
 
+	authApi := new(controller.AuthApi)
+
 	index := noAuth.Group("/")
 	{
 		index.GET("/", controller.Home)
 		index.GET("/health", controller.AppHealth)
 		index.GET("/status", controller.AppStatus)
-		index.POST("/login", controller.UserLogin)
-		index.POST("/signup", controller.UserSignup)
+		index.POST("/login", authApi.UserLogin)
+		index.POST("/signup", authApi.UserSignup)
 		// 终端管理
 		index.GET("/ws", controller.ShellWs)
 	}
@@ -53,53 +55,58 @@ func AddRoutes(r *gin.Engine) {
 	admin.Use(middleware.Sensitive())
 	admin.Use(middleware.Cors())
 
-	admin.GET("/logout", controller.UserLogout)
+	admin.GET("/logout", authApi.UserLogout)
 	// 用户管理
 	user := admin.Group("/")
 	{
-		user.GET("/users", controller.GetUsers)
-		user.DELETE("/users/:id", controller.DeleteUser)
-		user.PUT("/users/:id", controller.EditUser)
-		user.GET("/users/:id", controller.UserInfo)
-		user.POST("/users", controller.AddUser)
-		user.GET("user/profile/:id", controller.GetUserProfile)
-		user.PUT("user/profile/:id", controller.UpdateUserProfile)
-		user.PUT("user/changepw/:id", controller.ChangeUserPassword)
+		userApi := new(controller.UserApi)
+		user.GET("/users", userApi.GetUsers)
+		user.DELETE("/users/:id", userApi.DeleteUser)
+		user.PUT("/users/:id", userApi.EditUser)
+		user.GET("/users/:id", userApi.UserInfo)
+		user.POST("/users", userApi.AddUser)
+		user.GET("user/profile/:id", userApi.GetUserProfile)
+		user.PUT("user/profile/:id", userApi.UpdateUserProfile)
+		user.PUT("user/changepw/:id", userApi.ChangeUserPassword)
 	}
 	// 角色管理
+	roleApi := new(controller.RoleApi)
 	role := admin.Group("/")
 	{
-		role.GET("/roles", controller.GetRoles)
-		role.DELETE("/roles/:id", controller.DeleteRole)
-		role.PUT("/roles/:id", controller.EditRole)
-		role.GET("/roles/:id", controller.RoleInfo)
-		role.POST("/roles", controller.AddRole)
+		role.GET("/roles", roleApi.GetRoles)
+		role.DELETE("/roles/:id", roleApi.DeleteRole)
+		role.PUT("/roles/:id", roleApi.EditRole)
+		role.GET("/roles/:id", roleApi.RoleInfo)
+		role.POST("/roles", roleApi.AddRole)
 	}
 
 	// 权限管理
+	permApi := new(controller.PermissionApi)
 	permission := admin.Group("/")
 	{
-		permission.GET("/permissions", controller.GetPermissions)
+		permission.GET("/permissions", permApi.GetPermissions)
 	}
 
 	// 主机管理
+	hostApi := new(controller.HostApi)
 	host := admin.Group("/")
 	{
-		host.GET("/users/hosts", controller.GetBindHosts)
-		host.GET("/users/searchhost", controller.SearchHosts)
-		host.GET("/users/:id/hosts", controller.GetUnBindHosts)
-		host.DELETE("/hosts/:id", controller.DeleteHost)
-		host.PUT("/hosts/:id", controller.EditHost)
-		host.GET("/hosts/:id", controller.HostInfo)
-		host.POST("/hosts", controller.AddHost)
-		host.POST("/hosts/assign", controller.AssignHost)
+		host.GET("/users/hosts", hostApi.GetBindHosts)
+		host.GET("/users/searchhost", hostApi.SearchHosts)
+		host.GET("/users/:id/unbindhosts", hostApi.GetUnBindHosts)
+		host.POST("/hosts/assign", hostApi.AssignHost)
+		host.POST("/users/:id/hosts", hostApi.AssignHost)
 
+		host.POST("/hosts", hostApi.AddHost)
+		host.PUT("/hosts/:id", hostApi.EditHost)
+		host.GET("/hosts/:id", hostApi.HostInfo)
+		host.DELETE("/hosts/:id", hostApi.DeleteHost)
 	}
 
 	// TODO: add 新开tab的标题应该是服务器的主机名称
 	xterm := admin.Group("/")
 	{
-		xterm.GET("/hosts/:id/ssh", controller.SshHost)
+		xterm.GET("/hosts/:id/ssh", hostApi.SshHost)
 		// xterm.GET("/host/:id/metrics", controller.MonitorHosts)
 		r.GET("/host/metrics", controller.MonitorHosts)
 		xterm.GET("/host/metrics", controller.MonitorHosts)

@@ -119,7 +119,7 @@ func GetUserUnbindHosts(id int64) []Host {
 	sub := db.Table("go_admin_host_user").Select("host_id").Where("user_id = ?", id)
 	if err := db.
 		Table("go_admin_host").
-		Where("deleted_at is NUll AND id NOT IN ?", sub).
+		Where("id NOT IN (?)", sub).
 		Find(&hosts).Error; err != nil {
 		fmt.Printf("Query: %v\n", err)
 	}
@@ -140,14 +140,24 @@ func DeleteHost(Id int64) Host {
 	return getHost
 }
 
-func HostAssignment(userId int64, hostIds []int64) error {
+func HostAssignment(userId int64, hostId int64) error {
 	// TODO: 这里是否可以考虑进行批量的插入记录呢
 	sqlStr := `insert into go_admin_host_user(host_id, user_id) values(?, ?)`
-	for _, hostId := range hostIds {
-		if err := db.Exec(sqlStr, hostId, userId).Error; err != nil {
-			fmt.Printf("Insert failed: %v", err)
-			return err
-		}
+	if err := db.Exec(sqlStr, hostId, userId).Error; err != nil {
+		fmt.Printf("Insert failed: %v", err)
+		return err
 	}
 	return nil
 }
+
+// func HostAssignment(userId int64, hostIds []int64) error {
+// 	// TODO: 这里是否可以考虑进行批量的插入记录呢
+// 	sqlStr := `insert into go_admin_host_user(host_id, user_id) values(?, ?)`
+// 	for _, hostId := range hostIds {
+// 		if err := db.Exec(sqlStr, hostId, userId).Error; err != nil {
+// 			fmt.Printf("Insert failed: %v", err)
+// 			return err
+// 		}
+// 	}
+// 	return nil
+// }

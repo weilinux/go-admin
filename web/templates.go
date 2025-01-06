@@ -9,6 +9,7 @@ import (
 )
 
 func loadTemplates(staticFS embed.FS) (*template.Template, error) {
+
 	var err4 error
 	t := template.New("")
 	err := fs.WalkDir(staticFS, ".", func(path string, d fs.DirEntry, err error) error {

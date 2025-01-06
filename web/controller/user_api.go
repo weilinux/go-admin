@@ -1,96 +1,18 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/weilinux/go-gin-skeleton-auth/model"
 	"github.com/weilinux/go-gin-skeleton-auth/pkg/errcode"
-	"github.com/weilinux/go-gin-skeleton-auth/web/middleware"
-	"github.com/weilinux/go-gin-skeleton-auth/web/session"
-	"net/http"
 	"strconv"
 	"time"
 )
 
-func UserLogin(c *gin.Context) {
-	response := NewResponse(c)
-	var userInput model.User
-	userInput.UserName = c.PostForm("UserName")
-	userInput.Password = c.PostForm("Password")
-
-	if UserAuth(userInput) {
-		session.SetCookieLogin(c)
-		token, err := generateJWT(userInput.UserName)
-		if err != nil {
-			response.ToErrorResponse(errcode.Fail.WithDetails(err.Error()))
-		}
-		data := map[string]interface{}{
-			"UserName": userInput.UserName,
-			"Token":    token,
-		}
-		response.ToResponse(SuccessResponse{Data: data})
-	} else {
-		response.ToErrorResponse(errcode.Fail.WithDetails("用户认证失败!!!"))
-	}
+type UserApi struct {
+	BaseApi
 }
 
-func UserLogout(c *gin.Context) {
-	// authenticate.ExpireUserSession(w, r)
-	// authenticate.ExpireSecureCookie(w, r)
-
-	cookie, err := c.Cookie("session")
-	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/login")
-		return
-	}
-	delete(session.DbSessions, cookie)
-	c.SetCookie("session", "", -1, "/", "www.wllinux.com", false, true)
-
-	c.Redirect(http.StatusSeeOther, "/login")
-}
-
-// func UserLogout(c *gin.Context) {
-// 	// authenticate.ExpireUserSession(w, r)
-// 	// authenticate.ExpireSecureCookie(w, r)
-//
-// 	cookie, err := c.Cookie("session")
-// 	if err != nil {
-// 		c.Redirect(http.StatusSeeOther, "/login")
-// 		return
-// 	}
-// 	delete(session.DbSessions, cookie)
-// 	c.SetCookie("session", "", -1, "/", "192.168.2.230", false, true)
-//
-// 	c.Redirect(http.StatusSeeOther, "/login")
-// }
-
-func UserSignup(c *gin.Context) {
-	response := NewResponse(c)
-	var userInput model.User
-	userInput.UserName = c.PostForm("UserName")
-	userInput.Password = c.PostForm("Password")
-
-	if model.UserExists(userInput) {
-		response.ToErrorResponse(errcode.ErrorExistUserFail)
-		return
-	}
-
-	_, err := model.CreateUser(model.User{
-		Model: &model.Model{
-			CreatedTime: time.Now(),
-			UpdatedTime: time.Now(),
-		},
-		UserName: userInput.UserName,
-		Password: string(generatedHash([]byte(userInput.Password))),
-	})
-	if err != nil {
-		response.ToErrorResponse(errcode.ErrorCreateUserFail)
-	}
-	response.ToResponse(SuccessResponse{Code: 200})
-}
-
-func DeleteUser(c *gin.Context) {
+func (u *UserApi) DeleteUser(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
 	ID, err := strconv.ParseInt(id, 10, 64)
@@ -105,7 +27,7 @@ func DeleteUser(c *gin.Context) {
 	})
 }
 
-func EditUser(c *gin.Context) {
+func (u *UserApi) EditUser(c *gin.Context) {
 	response := NewResponse(c)
 	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 	user := &model.User{Model: &model.Model{ID: uint(ID)}}
@@ -129,7 +51,7 @@ func EditUser(c *gin.Context) {
 	})
 }
 
-func AddUser(c *gin.Context) {
+func (u *UserApi) AddUser(c *gin.Context) {
 	response := NewResponse(c)
 	var user = &model.User{}
 	user.UserName = c.PostForm("UserName")
@@ -162,7 +84,7 @@ func AddUser(c *gin.Context) {
 	})
 }
 
-func UserInfo(c *gin.Context) {
+func (u *UserApi) UserInfo(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
 	ID, err := strconv.ParseInt(id, 10, 64)
@@ -174,7 +96,7 @@ func UserInfo(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Data: user})
 }
 
-func GetUsers(c *gin.Context) {
+func (u *UserApi) GetUsers(c *gin.Context) {
 	response := NewResponse(c)
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
@@ -194,7 +116,7 @@ func GetUsers(c *gin.Context) {
 }
 
 // TODO: 获取个人信息完善
-func GetUserProfile(c *gin.Context) {
+func (u *UserApi) GetUserProfile(c *gin.Context) {
 	response := NewResponse(c)
 	id, _ := strconv.Atoi(c.Param("id"))
 	data, code := model.GetUserProfile(id)
@@ -224,7 +146,7 @@ func GetUserProfile(c *gin.Context) {
 // database.DB.Model(&user).Updates(user)
 
 // TODO: 更新个人信息完善
-func UpdateUserProfile(c *gin.Context) {
+func (u *UserApi) UpdateUserProfile(c *gin.Context) {
 	response := NewResponse(c)
 	var data model.Profile
 	id, _ := strconv.Atoi(c.Param("id"))
@@ -236,7 +158,7 @@ func UpdateUserProfile(c *gin.Context) {
 }
 
 // TODO: 修改用户密码
-func ChangeUserPassword(c *gin.Context) {
+func (u *UserApi) ChangeUserPassword(c *gin.Context) {
 	response := NewResponse(c)
 	var data model.User
 	id, _ := strconv.Atoi(c.Param("id"))
@@ -264,32 +186,4 @@ func ChangeUserPassword(c *gin.Context) {
 	// } else {
 	// 	response.OkWithMessage("修改成功", c)
 	// }
-}
-
-func UserAuth(userInput model.User) bool {
-	var (
-		user model.User
-		err  error
-	)
-	if user, err = model.FindUserByName(userInput.UserName); err != nil {
-		return false
-	}
-	return compareHash([]byte(user.Password), []byte(userInput.Password))
-}
-
-func generateJWT(username string) (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-
-	claims["authorized"] = true
-	claims["username"] = username
-	claims["exp"] = time.Now().Add(time.Minute * 60).Unix()
-
-	tokenString, err := token.SignedString(middleware.SampleSecretKey)
-
-	if err != nil {
-		_ = fmt.Errorf("something Went Wrong: %s", err.Error())
-		return "", err
-	}
-	return tokenString, nil
 }

@@ -22,6 +22,7 @@ func ConnectDatabase() *gorm.DB {
 	}
 
 	tables := model.Initialize(conn)
+	// tables2 := model.Initialize(conn)
 	SyncTables(conn, tables)
 	sqlDB, err := conn.DB()
 	if err != nil {

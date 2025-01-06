@@ -8,7 +8,11 @@ import (
 	"time"
 )
 
-func DeleteRole(c *gin.Context) {
+type RoleApi struct {
+	BaseApi
+}
+
+func (r *RoleApi) DeleteRole(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
 	ID, err := strconv.ParseInt(id, 10, 64)
@@ -25,7 +29,7 @@ func DeleteRole(c *gin.Context) {
 	})
 }
 
-func EditRole(c *gin.Context) {
+func (r *RoleApi) EditRole(c *gin.Context) {
 	// response := NewResponse(c)
 	// ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 	// role := &model.Role{Model: &model.Model{ID: int(ID)}}
@@ -52,7 +56,7 @@ func EditRole(c *gin.Context) {
 	// })
 }
 
-func AddRole(c *gin.Context) {
+func (r *RoleApi) AddRole(c *gin.Context) {
 	response := NewResponse(c)
 	var role = &model.Role{}
 	role.Name = c.PostForm("name")
@@ -81,7 +85,7 @@ func AddRole(c *gin.Context) {
 	})
 }
 
-func RoleInfo(c *gin.Context) {
+func (r *RoleApi) RoleInfo(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
 	ID, err := strconv.ParseInt(id, 10, 64)
@@ -104,7 +108,7 @@ func RoleInfo(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Data: role, Msg: "角色详情"})
 }
 
-func GetRoles(c *gin.Context) {
+func (r *RoleApi) GetRoles(c *gin.Context) {
 	response := NewResponse(c)
 	roles := model.AllRoles()
 	data := map[string]interface{}{
@@ -120,7 +124,7 @@ func GetRoles(c *gin.Context) {
 }
 
 // 注意查看这个更新用户的代码
-// func UpdateRole(c *fiber.Ctx) error {
+// func  (r *RoleApi) UpdateRole(c *fiber.Ctx) error {
 // 	if err := middlewares.IsAuthorize(c, "roles"); err != nil {
 // 		return err
 // 	}

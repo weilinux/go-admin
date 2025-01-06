@@ -5,7 +5,11 @@ import (
 	"github.com/weilinux/go-gin-skeleton-auth/model"
 )
 
-func GetPermissions(c *gin.Context) {
+type PermissionApi struct {
+	BaseApi
+}
+
+func (p *PermissionApi) GetPermissions(c *gin.Context) {
 	response := NewResponse(c)
 	permission := model.AllPermissions()
 	data := map[string]interface{}{

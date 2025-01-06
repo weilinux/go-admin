@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/weilinux/go-gin-skeleton-auth/pkg/convert"
 	"github.com/weilinux/go-gin-skeleton-auth/pkg/errcode"
 	"net/http"
 )
@@ -30,24 +31,24 @@ type CaptchaResponse struct {
  * }
  */
 
-type GoAdminResponse struct {
+type Response struct {
 	Ctx *gin.Context
 }
 
-func NewResponse(ctx *gin.Context) *GoAdminResponse {
-	return &GoAdminResponse{
+func NewResponse(ctx *gin.Context) *Response {
+	return &Response{
 		Ctx: ctx,
 	}
 }
 
-func (r *GoAdminResponse) ToResponse(data interface{}) {
+func (r *Response) ToResponse(data interface{}) {
 	if data == nil {
 		data = gin.H{}
 	}
 	r.Ctx.JSON(http.StatusOK, data)
 }
 
-func (r *GoAdminResponse) ToResponseList(list interface{}, totalRows int) {
+func (r *Response) ToResponseList(list interface{}, totalRows int) {
 	r.Ctx.JSON(http.StatusOK, &ResponseCommonStruct{
 		Data:  list,
 		Count: totalRows,
@@ -59,7 +60,7 @@ func (r *GoAdminResponse) ToResponseList(list interface{}, totalRows int) {
 	})
 }
 
-func (r *GoAdminResponse) ToErrorResponse(err *errcode.Error) {
+func (r *Response) ToErrorResponse(err *errcode.Error) {
 	response := gin.H{"code": err.Code(), "msg": err.Msg()}
 	details := err.Details()
 	if len(details) > 0 {
@@ -84,4 +85,38 @@ type ResponseCommonStruct struct {
 	Data  interface{} `json:"data"`
 	Pager Pager       `json:"pager"`
 	Count int         `json:"count"`
+}
+
+func GetPage(c *gin.Context) int {
+	page := convert.StrTo(c.Query("page")).MustInt()
+	if page <= 0 {
+		return 1
+	}
+
+	return page
+}
+
+func GetPageSize(c *gin.Context) int {
+	pageSize := convert.StrTo(c.Query("page_size")).MustInt()
+	if pageSize <= 0 {
+		// return global.AppSetting.DefaultPageSize
+		return 10
+	}
+	// if pageSize > global.AppSetting.MaxPageSize {
+	// 	return global.AppSetting.MaxPageSize
+	// }
+	if pageSize > 100 {
+		return 50
+	}
+
+	return pageSize
+}
+
+func GetPageOffset(page, pageSize int) int {
+	result := 0
+	if page > 0 {
+		result = (page - 1) * pageSize
+	}
+
+	return result
 }

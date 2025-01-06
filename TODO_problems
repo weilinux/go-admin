@@ -10,9 +10,6 @@ show engine innodb status中的latest foreign key error
 
 //网络上YP来的代码需要进行严格的验证才能的,才能保证其准确性
 
-
-
-
 GORM v2 一对一关联查询使用(Belongs To 、Has One区别)
 gorm视角里的一对一和一对多都是基于MYSQL的一对多实现的
 https://blog.csdn.net/Douz_lungfish/article/details/121614898
@@ -20,3 +17,40 @@ https://blog.csdn.net/Douz_lungfish/article/details/121614898
 //更好,更快地生成测试用例collection文件
 Convert swagger2 doc into postman2 collection.
 Update Postman collection from openapi file
+
+
+//同时启动http, grpc服务器
+https://github.com/rocboss/paopao-ce/blob/fb9cee68dbd7b7330ca3d8f228a10ebe2b1575c0/internal/service/server.go
+
+
+//快速添加注释(已安装插件，如下配置一下)
+https://blog.csdn.net/csde12/article/details/122634333
+
+
+//golang 漏洞扫描工具
+go install golang.org/x/vuln/cmd/govulncheck@latest
+
+
+golang与汇编（一）
+https://blog.csdn.net/raoxiaoya/article/details/130605885
+
+
+go utils库
+https://github.com/duke-git/lancet/tree/main
+
+
+
+golang's github actions分享
+https://github.com/cedrickring/golang-action
+
+
+Pre-commit hooks in Golang
+https://medium.com/readytowork-org/pre-commit-hooks-in-golang-6513e69d7355
+https://github.com/TekWizely/pre-commit-golang
+https://github.com/dnephin/pre-commit-golang
+https://github.com/aitemr/awesome-git-hooks/blob/master/pre-commit/pre-commit-swiftlint
+
+
+当下流行的golang发布工具
+https://goreleaser.com/
+
