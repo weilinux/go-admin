@@ -134,6 +134,78 @@ MVC是其实一种最简单的哲学思想，Model代表抽象事物，View代�
 近年来各种演化如：MVP、MVVM、MVI等等，其实都是在围绕C做文章，最终的目的无非就是更好的隔离M和V，也就是千方百计分离UI逻辑和业务逻辑。
 Flux架构其实也是一种MVC，而Redux/Vuex/Pinia、以及本人的框架Elux，都可以看作它的变种。下面我们就看看如何利用Flux架构来分离UI逻辑与业务逻辑
 
+//========================================================================
+https://gokit.io/faq/#service-discovery-mdash-which-service-discovery-systems-are-supported
+
+Persistence — How should I work with databases and data stores?
+Accessing databases is typically part of the core business logic. Therefore, it probably makes sense to include an e.g. *sql.DB pointer in the concrete implementation of your service.
+
+type MyService struct {
+	db     *sql.DB
+	value  string
+	logger log.Logger
+}
+
+func NewService(db *sql.DB, value string, logger log.Logger) *MyService {
+	return &MyService{
+		db:     db,
+		value:  value,
+		logger: logger,
+	}
+}
+Even better: consider defining an interface to model your persistence operations. The interface will deal in business domain objects, and have an implementation that wraps the database handle. For example, consider a simple persistence layer for user profiles.
+
+type Store interface {
+	Insert(Profile) error
+	Select(id string) (Profile, error)
+	Delete(id string) error
+}
+
+type databaseStore struct{ db *sql.DB }
+
+func (s *databaseStore) Insert(p Profile) error            { /* ... */ }
+func (s *databaseStore) Select(id string) (Profile, error) { /* ... */ }
+func (s *databaseStore) Delete(id string) error            { /* ... */ }
+In this case, you’d include a Store, rather than a *sql.DB, in your concrete implementation.
+//========================================================================
+
+
+Types of testing:
+
+Unit Testing
+It focuses on smallest unit of software design. In this we test an individual unit or group of inter related units. It is often done by programmer by using sample input and observing its corresponding outputs.
+Integration Testing
+The objective is to take unit tested components and build a program structure that has been dictated by design.Integration testing is testing in which a group of components are combined to produce output.
+Regression Testing
+Every time new module is added leads to changes in program. This type of testing make sure that whole component works properly even after adding components to the complete program.
+
+
+//========================================================================
+	// 使用 context 控制查询超时
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// 首先获取总记录数
+	var total int64
+	err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM products").Scan(&total)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get total count"})
+		return
+	}
+
+	// 查询分页数据
+	rows, err := db.QueryContext(ctx,
+		`SELECT id, name, description, price, stock, created_at
+		FROM products
+		ORDER BY id DESC
+		LIMIT ? OFFSET ?`,
+		pageSize, offset,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query products"})
+		return
+	}
+//========================================================================
 
 
 

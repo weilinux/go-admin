@@ -97,6 +97,8 @@ func (u *UserApi) UserInfo(c *gin.Context) {
 }
 
 func (u *UserApi) GetUsers(c *gin.Context) {
+	// TODO:: 使用 context 控制查询超时
+	// https://github.com/weilinux/go-admin/blob/4ccb8caffb9ea05a9ce1c65d4c9c97b158f8361d/TODO_后端技术体系化#L184
 	response := NewResponse(c)
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))

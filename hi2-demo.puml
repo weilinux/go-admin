@@ -1,0 +1,34 @@
+@startuml
+graph TD
+    N["N层架构"] --> ThreeLayer["3层架构"]
+    N --> FourLayer["4层架构"]
+    N --> ServiceBased["汪道韦权"]
+
+    ThreeLayer --> UI["表示层"]
+    ThreeLayer --> BLL["业务层"]
+    ThreeLayer --> DAL["持久层"]
+
+    UI --> H1["1. Js/html"]
+    UI --> H2["2. 手机APP"]
+    BLL --> B1["1. 逻辑业务处理"]
+    BLL --> B2["2. 上下层数据传递"]
+    DAL --> D1["1. DB结构(表)的创建"]
+    DAL --> D2["2. 不要动的同上一层"]
+    DAL --> D3["3. 使用ORM工具"]
+
+    FourLayer --> PL["展示层"]
+    FourLayer --> BL["业务层"]
+    FourLayer --> DALayer["Data access layer(数据DB访问)"]
+    FourLayer --> EL["持久层"]
+
+    ServiceBased --> SL1["不跨层!"]
+    ServiceBased --> SL2["Cache层 - 加速"]
+    ServiceBased --> SL3["持久层"]
+    SL3 --> Entity["Entity Framework!"]
+    SL3 --> ORM["ORM框架等"]
+
+    ServiceBased --> Final["好处"]
+    Final --> F1["1. 各层各自封装"]
+    Final --> F2["2. 各层各自隔离"]
+    Final --> F3["3. 各层各自保护"]
+@enduml

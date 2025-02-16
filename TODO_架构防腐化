@@ -21,8 +21,6 @@ https://github.com/stevenli91748/Software-Architecture-Design/blob/master/%E8%BD
 //8）拆解过程中也可能会发现之前初步架构设计中不合理或遗漏的地方，请马上调整；有时候甚至会发现之前的设计完全不对，那么就要有勇气推翻重做。
 //9）“第二层的的拆解”结果有可能是组件（Component）、代码包、某个分层等等，可能是“物理分拆”也可能是“逻辑分拆”。那么“第二层的拆解”要多细才合适呢？其实很难有固定的标准，给一个简单标准作为参考：如果再拆解下去下一步的拆解就到类了，那么就可以认为目前的拆解粒度比较合适了。细化到类的拆解，可以在模块设计（详细设计）中再进一步考虑。
 
-
-
 Section 1: Principles of System Design
 1.1: Modularization
 Dividing the system into smaller, manageable modules help reduce complexity, improve maintainability, and increase reusability.
@@ -263,10 +261,48 @@ A服务尽量不要去管B服务中的事
 //========================================================================
 
 
+//========================================================================
+https://github.com/atharv-bhadange/go-api-template/tree/main
+
+Folder Structure:
+/api/v1 Encapsulates all API version 1 routes, controllers, services, and middleware.
+/cmd Initialises the Fiber app and sets up basic middleware configurations.
+/config Handles configuration and environment variables.
+/db Manages database connections and interactions.
+/handlers Manages responses and database transactions.
+/models Contains auto-generated models from database tables using sqlboiler.
+/secure Stores SSL certificates (excluded from version control).
+/types Defines custom types for cross-app usage.
+/utils Provides utility functions.
+main.go The entry point of the application.
 
 
+Optional Hot Reloading:
+For a more dynamic development experience, enable hot reloading with the following steps:
+Install air: Run go get github.com/cosmtrek/air.
+Start with Hot Reloading: Start the app with hot reloading using air.
+
+Additional Notes and Best Practices:
+The boilerplate includes a sample product API implementation for reference.
+It’s recommended to start new PGX transactions from controllers only.
+All routes, except for the health check endpoint, are located under the /api/v1 path.
+For better organisation, the models folder can be managed as a separate Git submodule.
+//========================================================================
 
 
+// Sharding PostgreSQL with Citus and Golang
+https://medium.com/@bhadange.atharv/sharding-postgresql-with-citus-and-golang-on-gofiber-21a0ef5efb30
+
+//Simple and minimal Go template for building fast and mantainable HTTP services
+https://github.com/paologaleotti/blaze/tree/master
+https://github.com/paologaleotti/blaze-api-example/tree/master
+https://github.com/paologaleotti/blaze-cli/tree/master
+//========================================================================
+
+// go Prod-ready GO Restful API  boilerplate with Echo
+https://github.com/codoworks/go-boilerplate
 
 
-
+确定需求-选择开发工具和框架 - 数据库建模与设计 - 编写业务逻辑 - 创建Restful API - 用户认证与授权 - 日志记录与错误处理
+确定需求-选择开发工具和框架 - 数据库建模与设计 - 编写业务逻辑 - 创建Restful API - 用户认证与授权 - 日志记录与错误处理
+确定需求-选择开发工具和框架 - 数据库建模与设计 - 编写业务逻辑 - 创建Restful API - 用户认证与授权 - 日志记录与错误处理

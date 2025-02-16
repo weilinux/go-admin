@@ -1,0 +1,28 @@
+@startuml
+
+actor User
+
+participant "Web Application" as web
+participant "Mobile Application" as mobile
+participant API
+participant "User Service" as user
+participant "Route Service" as route
+participant "Real-time Location Tracking Service" as location
+participant Database
+
+User -> web: Uses
+User -> mobile: Uses
+
+web -> API: Sends request
+mobile -> API: Sends request
+
+API -> user: Sends request
+user -> Database: Reads/Writes data
+
+API -> route: Sends request
+route -> Database: Reads/Writes data
+
+API -> location: Sends request
+location -> Database: Reads/Writes data
+
+@enduml
