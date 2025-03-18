@@ -18,6 +18,14 @@ type AuthApi struct {
 
 // 用户登录/注销/找回密码
 
+// UserLogin
+// @Tags UserApi
+// @Summary 用户登录
+// @Description 用户通过用户名和密码登录，返回认证 Token
+// @Param UserName formData string true "用户名"
+// @Param Password formData string true "密码"
+// @Success 200 {object} controller.SuccessResponse{data=map[string]interface{}}
+// @Router /api/v1/auth/login [post]
 func (auth *AuthApi) UserLogin(c *gin.Context) {
 	response := NewResponse(c)
 	var userInput model.User
@@ -40,6 +48,12 @@ func (auth *AuthApi) UserLogin(c *gin.Context) {
 	}
 }
 
+// UserLogout
+// @Tags UserApi
+// @Summary 用户登出
+// @Description 用户登出并清除会话
+// @Success 302 "重定向到登录页面"
+// @Router /api/v1/auth/logout [get]
 func (auth *AuthApi) UserLogout(c *gin.Context) {
 	// authenticate.ExpireUserSession(w, r)
 	// authenticate.ExpireSecureCookie(w, r)
@@ -70,6 +84,14 @@ func (auth *AuthApi) UserLogout(c *gin.Context) {
 // 	c.Redirect(http.StatusSeeOther, "/login")
 // }
 
+// UserSignup
+// @Tags UserApi
+// @Summary 用户注册
+// @Description 用户通过用户名和密码注册新账户
+// @Param UserName formData string true "用户名"
+// @Param Password formData string true "密码"
+// @Success 200 {object} controller.SuccessResponse "注册成功"
+// @Router /api/v1/auth/signup [post]
 func (auth *AuthApi) UserSignup(c *gin.Context) {
 	response := NewResponse(c)
 	var userInput model.User

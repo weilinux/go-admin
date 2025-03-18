@@ -1,0 +1,91 @@
+definitions:
+  controller.SuccessResponse:
+    properties:
+      code:
+        description: 响应编码：0成功 401请登录 403无权限 500错误
+        example: 200
+        type: integer
+      data:
+        description: 数据对象
+      msg:
+        description: 消息提示
+        example: success
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/users:
+    get:
+      description: get paginated user list
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      summary: 获取用户列表
+      tags:
+      - UserApi
+  /api/v1/users/hosts:
+    get:
+      description: get user host info
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: body
+      summary: 获取用户主机信息
+      tags:
+      - InternalApi
+  /health:
+    get:
+      description: get app health
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: body
+      summary: 检测API
+      tags:
+      - InternalApi
+  /status:
+    get:
+      description: get app status
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: body
+      summary: 状态API
+      tags:
+      - InternalApi
+swagger: "2.0"

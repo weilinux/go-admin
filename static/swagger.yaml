@@ -1,6 +1,721 @@
+definitions:
+  controller.SuccessResponse:
+    properties:
+      code:
+        description: 响应编码：0成功 401请登录 403无权限 500错误
+        example: 200
+        type: integer
+      data:
+        description: 数据对象
+      msg:
+        description: 消息提示
+        example: success
+        type: string
+    type: object
+  controller.hostAssignment:
+    properties:
+      host_id:
+        description: HostIds []int64 `json:"host_id" binding:"required"`
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - host_id
+    - user_id
+    type: object
+  gin.H:
+    additionalProperties: {}
+    type: object
+  model.Host:
+    properties:
+      created_time:
+        type: string
+      hostIP:
+        type: string
+      hostName:
+        type: string
+      hostPassword:
+        type: string
+      hostPort:
+        type: integer
+      hostUser:
+        type: string
+      id:
+        type: integer
+      updated_time:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/model.User'
+        type: array
+    type: object
+  model.Permission:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.Profile:
+    properties:
+      avatar:
+        type: string
+      bili:
+        type: string
+      desc:
+        type: string
+      email:
+        type: string
+      icp_record:
+        type: string
+      id:
+        type: integer
+      img:
+        type: string
+      name:
+        type: string
+      qq_chat:
+        type: string
+      wechat:
+        type: string
+      weibo:
+        type: string
+    type: object
+  model.Role:
+    properties:
+      code:
+        description: 角色编码
+        type: string
+      created_time:
+        type: string
+      id:
+        type: integer
+      name:
+        description: |-
+          *gorm.Model
+          Id     uint   `json:"id"`
+        type: string
+      permission:
+        description: 角色权限
+        items:
+          $ref: '#/definitions/model.Permission'
+        type: array
+      sort:
+        description: 排序
+        type: integer
+      status:
+        description: 状态 1-启用 2-禁用
+        type: integer
+      updated_time:
+        type: string
+    type: object
+  model.User:
+    properties:
+      created_time:
+        type: string
+      id:
+        type: integer
+      role:
+        $ref: '#/definitions/model.Role'
+      roleID:
+        type: integer
+      updated_time:
+        type: string
+      userName:
+        type: string
+    type: object
+  request.EditHost:
+    properties:
+      hostIP:
+        type: string
+      hostName:
+        type: string
+      hostPassword:
+        type: string
+      hostPort:
+        type: integer
+      hostUser:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
+  /api/v1/auth/login:
+    post:
+      description: 用户通过用户名和密码登录，返回认证 Token
+      parameters:
+      - description: 用户名
+        in: formData
+        name: UserName
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: Password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      summary: 用户登录
+      tags:
+      - UserApi
+  /api/v1/auth/logout:
+    get:
+      description: 用户登出并清除会话
+      responses:
+        "302":
+          description: 重定向到登录页面
+      summary: 用户登出
+      tags:
+      - UserApi
+  /api/v1/auth/signup:
+    post:
+      description: 用户通过用户名和密码注册新账户
+      parameters:
+      - description: 用户名
+        in: formData
+        name: UserName
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: Password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: 注册成功
+          schema:
+            $ref: '#/definitions/controller.SuccessResponse'
+      summary: 用户注册
+      tags:
+      - UserApi
+  /api/v1/conts:
+    get:
+      description: get container list from Docker
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取容器列表
+      tags:
+      - ContApi
+  /api/v1/hosts:
+    get:
+      description: get paginated host list
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取主机列表
+      tags:
+      - HostApi
+    post:
+      description: add a new host
+      parameters:
+      - description: Host name
+        in: formData
+        name: HostName
+        required: true
+        type: string
+      - description: Host IP address
+        in: formData
+        name: HostIP
+        required: true
+        type: string
+      - description: Host port number
+        in: formData
+        name: HostPort
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Host'
+              type: object
+      security:
+      - Bearer: []
+      summary: 添加主机
+      tags:
+      - HostApi
+  /api/v1/hosts/{id}:
+    delete:
+      description: delete a host by ID
+      parameters:
+      - description: Host ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SuccessResponse'
+      security:
+      - Bearer: []
+      summary: 删除主机
+      tags:
+      - HostApi
+    get:
+      description: get detailed information about a host
+      parameters:
+      - description: Host ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Host'
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取主机详情
+      tags:
+      - HostApi
+    put:
+      description: update host information
+      parameters:
+      - description: Host ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Host information to update
+        in: body
+        name: hostUpdates
+        required: true
+        schema:
+          $ref: '#/definitions/request.EditHost'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Host'
+              type: object
+      security:
+      - Bearer: []
+      summary: 编辑主机信息
+      tags:
+      - HostApi
+  /api/v1/hosts/{id}/ssh:
+    get:
+      description: redirect to SSH access path for a host
+      parameters:
+      - description: Host ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "302":
+          description: Redirect to SSH access path
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: SSH连接到主机
+      tags:
+      - HostApi
+  /api/v1/hosts/assign:
+    post:
+      description: assign host to a user
+      parameters:
+      - description: User and host assignment information
+        in: body
+        name: assignment
+        required: true
+        schema:
+          $ref: '#/definitions/controller.hostAssignment'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SuccessResponse'
+      security:
+      - Bearer: []
+      summary: 分配主机给用户
+      tags:
+      - HostApi
+  /api/v1/hosts/search:
+    get:
+      description: search hosts by host name
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Host name for filtering
+        in: query
+        name: host
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: 搜索主机
+      tags:
+      - HostApi
+  /api/v1/permissions:
+    get:
+      description: 获取所有权限的列表
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取权限列表
+      tags:
+      - PermissionApi
+  /api/v1/roles:
+    get:
+      description: 获取所有角色的列表
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                ' data':
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取角色列表
+      tags:
+      - RoleApi
+    post:
+      description: 添加一个新的角色
+      parameters:
+      - description: 角色名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 角色状态
+        in: formData
+        name: status
+        required: true
+        type: integer
+      - description: 角色代码
+        in: formData
+        name: code
+        required: true
+        type: string
+      - description: 排序值
+        in: formData
+        name: sort
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                ' data':
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: 添加角色
+      tags:
+      - RoleApi
+  /api/v1/roles/{id}:
+    delete:
+      description: 根据角色ID删除角色
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: 删除角色
+      tags:
+      - RoleApi
+    get:
+      description: 根据角色ID获取角色的详细信息
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                ' data':
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取角色详情
+      tags:
+      - RoleApi
+    put:
+      description: 根据角色ID编辑角色信息
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 角色名称
+        in: formData
+        name: RoleName
+        type: string
+      - description: 角色密码
+        in: formData
+        name: Password
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                ' data':
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - Bearer: []
+      summary: 编辑角色
+      tags:
+      - RoleApi
+  /api/v1/users:
+    get:
+      description: get paginated user list
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取用户列表
+      tags:
+      - UserApi
+  /api/v1/users/{id}/hosts/unbind:
+    get:
+      description: get list of hosts not bound to a user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取未绑定的主机列表
+      tags:
+      - HostApi
+  /api/v1/users/{id}/password:
+    put:
+      description: change user password
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Password Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SuccessResponse'
+      summary: 修改用户密码
+      tags:
+      - UserApi
+  /api/v1/users/{id}/profile:
+    get:
+      description: get user profile by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Profile'
+              type: object
+      summary: 获取用户个人资料
+      tags:
+      - UserApi
+    put:
+      description: update user profile
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User Profile Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Profile'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.SuccessResponse'
+      summary: 更新用户个人资料
+      tags:
+      - UserApi
   /api/v1/users/hosts:
     get:
       description: get user host info
@@ -13,9 +728,11 @@ paths:
           description: Forbidden
           schema:
             type: body
-      summary: 获取用户主机信息
+      security:
+      - Bearer: []
+      summary: 获取用户已绑定主机信息
       tags:
-      - InternalApi
+      - HostApi
   /health:
     get:
       description: get app health
@@ -30,7 +747,7 @@ paths:
             type: body
       summary: 检测API
       tags:
-      - InternalApi
+      - HealthCheckApi
   /status:
     get:
       description: get app status
@@ -45,5 +762,10 @@ paths:
             type: body
       summary: 状态API
       tags:
-      - InternalApi
+      - HealthCheckApi
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

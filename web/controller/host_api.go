@@ -29,6 +29,15 @@ func getUsernameFromContext(c *gin.Context) (string, bool) {
 	return "", false
 }
 
+// GetHosts
+// @Tags HostApi
+// @Summary 获取主机列表
+// @Description get paginated host list
+// @Security Bearer
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Items per page" default(10)
+// @Success 200 {object} controller.SuccessResponse{data=map[string]interface{}}
+// @Router /api/v1/hosts [get]
 func (h *HostApi) GetHosts(c *gin.Context) {
 	response := NewResponse(c)
 
@@ -46,9 +55,11 @@ func (h *HostApi) GetHosts(c *gin.Context) {
 	})
 }
 
-// @Tags InternalApi
-// @Summary 获取用户主机信息
+// GetBindHosts
+// @Tags HostApi
+// @Summary 获取用户已绑定主机信息
 // @Description get user host info
+// @Security Bearer
 // @Success 200 {string} json data
 // @Failure 403 body is empty
 // @Router /api/v1/users/hosts [get]
@@ -76,6 +87,16 @@ func (h *HostApi) GetBindHosts(c *gin.Context) {
 	})
 }
 
+// SearchHosts
+// @Tags HostApi
+// @Summary 搜索主机
+// @Description search hosts by host name
+// @Security Bearer
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Items per page" default(10)
+// @Param host query string false "Host name for filtering"
+// @Success 200 {object} controller.SuccessResponse{data=map[string]interface{}}
+// @Router /api/v1/hosts/search [get]
 func (h *HostApi) SearchHosts(c *gin.Context) {
 	response := NewResponse(c)
 	// var username string
@@ -111,6 +132,14 @@ func (h *HostApi) SearchHosts(c *gin.Context) {
 	})
 }
 
+// GetUnBindHosts
+// @Tags HostApi
+// @Summary 获取未绑定的主机列表
+// @Description get list of hosts not bound to a user
+// @Security Bearer
+// @Param id path int true "User ID"
+// @Success 200 {object} controller.SuccessResponse{data=map[string]interface{}}
+// @Router /api/v1/users/{id}/hosts/unbind [get]
 func (h *HostApi) GetUnBindHosts(c *gin.Context) {
 	response := NewResponse(c)
 	// user, _ := model.FindUserByName(session.GetUser(c))
@@ -128,6 +157,14 @@ func (h *HostApi) GetUnBindHosts(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Data: data})
 }
 
+// DeleteHost
+// @Tags HostApi
+// @Summary 删除主机
+// @Description delete a host by ID
+// @Security Bearer
+// @Param id path int true "Host ID"
+// @Success 200 {object} controller.SuccessResponse
+// @Router /api/v1/hosts/{id} [delete]
 func (h *HostApi) DeleteHost(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
@@ -139,6 +176,15 @@ func (h *HostApi) DeleteHost(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Msg: "删除主机成功"})
 }
 
+// EditHost
+// @Tags HostApi
+// @Summary 编辑主机信息
+// @Description update host information
+// @Security Bearer
+// @Param id path int true "Host ID"
+// @Param hostUpdates body systemReq.EditHost true "Host information to update"
+// @Success 200 {object} controller.SuccessResponse{data=model.Host}
+// @Router /api/v1/hosts/{id} [put]
 func (h *HostApi) EditHost(c *gin.Context) {
 	response := NewResponse(c)
 	var hostUpdates = &systemReq.EditHost{}
@@ -169,6 +215,14 @@ func (h *HostApi) EditHost(c *gin.Context) {
 	})
 }
 
+// HostInfo
+// @Tags HostApi
+// @Summary 获取主机详情
+// @Description get detailed information about a host
+// @Security Bearer
+// @Param id path int true "Host ID"
+// @Success 200 {object} controller.SuccessResponse{data=model.Host}
+// @Router /api/v1/hosts/{id} [get]
 func (h *HostApi) HostInfo(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
@@ -183,6 +237,16 @@ func (h *HostApi) HostInfo(c *gin.Context) {
 	})
 }
 
+// AddHost
+// @Tags HostApi
+// @Summary 添加主机
+// @Description add a new host
+// @Security Bearer
+// @Param HostName formData string true "Host name"
+// @Param HostIP formData string true "Host IP address"
+// @Param HostPort formData int true "Host port number"
+// @Success 200 {object} controller.SuccessResponse{data=model.Host}
+// @Router /api/v1/hosts [post]
 func (h *HostApi) AddHost(c *gin.Context) {
 	response := NewResponse(c)
 	var host model.Host
@@ -199,6 +263,14 @@ func (h *HostApi) AddHost(c *gin.Context) {
 	})
 }
 
+// AssignHost
+// @Tags HostApi
+// @Summary 分配主机给用户
+// @Description assign host to a user
+// @Security Bearer
+// @Param assignment body controller.hostAssignment true "User and host assignment information"
+// @Success 200 {object} controller.SuccessResponse
+// @Router /api/v1/hosts/assign [post]
 func (h *HostApi) AssignHost(c *gin.Context) {
 	response := NewResponse(c)
 
@@ -217,6 +289,15 @@ func (h *HostApi) AssignHost(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Msg: "分配主机成功"})
 }
 
+// SshHost
+// @Tags HostApi
+// @Summary SSH连接到主机
+// @Description redirect to SSH access path for a host
+// @Security Bearer
+// @Param id path int true "Host ID"
+// @Success 302 {string} string "Redirect to SSH access path"
+// @Failure 404 {object} gin.H
+// @Router /api/v1/hosts/{id}/ssh [get]
 func (h *HostApi) SshHost(c *gin.Context) {
 	// TODO: url主机地址加密 https://cloud.tencent.com/developer/article/1469183
 	id := c.Param("id")

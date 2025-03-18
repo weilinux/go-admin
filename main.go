@@ -29,6 +29,9 @@ func init() {
 	web.InitServer(staticFS)
 }
 
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 func main() {
 	sqlDB := mysql.ConnectDatabase()
 

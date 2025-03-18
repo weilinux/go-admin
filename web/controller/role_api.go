@@ -12,6 +12,14 @@ type RoleApi struct {
 	BaseApi
 }
 
+// DeleteRole
+// @Tags RoleApi
+// @Summary 删除角色
+// @Description 根据角色ID删除角色
+// @Security Bearer
+// @Param id path int true "角色ID"
+// @Success 200 {object} controller.SuccessResponse{msg=string}
+// @Router /api/v1/roles/{id} [delete]
 func (r *RoleApi) DeleteRole(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
@@ -29,6 +37,16 @@ func (r *RoleApi) DeleteRole(c *gin.Context) {
 	})
 }
 
+// EditRole
+// @Tags RoleApi
+// @Summary 编辑角色
+// @Description 根据角色ID编辑角色信息
+// @Security Bearer
+// @Param id path int true "角色ID"
+// @Param RoleName formData string false "角色名称"
+// @Param Password formData string false "角色密码"
+// @Success 200 {object} controller.SuccessResponse{msg=string, data=map[string]interface{}}
+// @Router /api/v1/roles/{id} [put]
 func (r *RoleApi) EditRole(c *gin.Context) {
 	// response := NewResponse(c)
 	// ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -56,6 +74,17 @@ func (r *RoleApi) EditRole(c *gin.Context) {
 	// })
 }
 
+// AddRole
+// @Tags RoleApi
+// @Summary 添加角色
+// @Description 添加一个新的角色
+// @Security Bearer
+// @Param name formData string true "角色名称"
+// @Param status formData int true "角色状态"
+// @Param code formData string true "角色代码"
+// @Param sort formData int true "排序值"
+// @Success 200 {object} controller.SuccessResponse{msg=string, data=map[string]interface{}}
+// @Router /api/v1/roles [post]
 func (r *RoleApi) AddRole(c *gin.Context) {
 	response := NewResponse(c)
 	var role = &model.Role{}
@@ -85,6 +114,14 @@ func (r *RoleApi) AddRole(c *gin.Context) {
 	})
 }
 
+// RoleInfo
+// @Tags RoleApi
+// @Summary 获取角色详情
+// @Description 根据角色ID获取角色的详细信息
+// @Security Bearer
+// @Param id path int true "角色ID"
+// @Success 200 {object} controller.SuccessResponse{msg=string, data=map[string]interface{}}
+// @Router /api/v1/roles/{id} [get]
 func (r *RoleApi) RoleInfo(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
@@ -108,6 +145,13 @@ func (r *RoleApi) RoleInfo(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Data: role, Msg: "角色详情"})
 }
 
+// GetRoles
+// @Tags RoleApi
+// @Summary 获取角色列表
+// @Description 获取所有角色的列表
+// @Security Bearer
+// @Success 200 {object} controller.SuccessResponse{msg=string, data=map[string]interface{}}
+// @Router /api/v1/roles [get]
 func (r *RoleApi) GetRoles(c *gin.Context) {
 	response := NewResponse(c)
 	roles := model.AllRoles()

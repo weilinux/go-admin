@@ -16,6 +16,7 @@ func (u *UserApi) DeleteUser(c *gin.Context) {
 	response := NewResponse(c)
 	id := c.Param("id")
 	ID, err := strconv.ParseInt(id, 10, 64)
+	//
 	if err != nil {
 		response.ToErrorResponse(errcode.InvalidParams)
 		return
@@ -29,8 +30,13 @@ func (u *UserApi) DeleteUser(c *gin.Context) {
 
 func (u *UserApi) EditUser(c *gin.Context) {
 	response := NewResponse(c)
-	ID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	ID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+
 	user := &model.User{Model: &model.Model{ID: uint(ID)}}
+	if err != nil {
+		response.ToErrorResponse(errcode.InvalidParams)
+		return
+	}
 
 	user.UserName = c.PostForm("UserName")
 	user.Password = c.PostForm("Password")
@@ -96,9 +102,18 @@ func (u *UserApi) UserInfo(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Data: user})
 }
 
+// GetUsers
+// @Tags UserApi
+// @Summary 获取用户列表
+// @Description get paginated user list
+// @Security Bearer
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Items per page" default(10)
+// @Success 200 {object} controller.SuccessResponse{data=map[string]interface{}}
+// @Router /api/v1/users [get]
 func (u *UserApi) GetUsers(c *gin.Context) {
 	// TODO:: 使用 context 控制查询超时
-	// https://github.com/weilinux/go-admin/blob/4ccb8caffb9ea05a9ce1c65d4c9c97b158f8361d/TODO_后端技术体系化#L184
+	// https://github.com/weilinux/go-admin/blob/c201cc164aced24718d8dc03071570ae4ce5e0bd/TODO_后端技术体系化#L184
 	response := NewResponse(c)
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
@@ -117,8 +132,15 @@ func (u *UserApi) GetUsers(c *gin.Context) {
 	})
 }
 
-// TODO: 获取个人信息完善
+// GetUserProfile
+// @Tags UserApi
+// @Summary 获取用户个人资料
+// @Description get user profile by ID
+// @Param id path int true "User ID"
+// @Success 200 {object} controller.SuccessResponse{data=model.Profile}
+// @Router /api/v1/users/{id}/profile [get]
 func (u *UserApi) GetUserProfile(c *gin.Context) {
+	// TODO: 获取个人信息完善
 	response := NewResponse(c)
 	id, _ := strconv.Atoi(c.Param("id"))
 	data, code := model.GetUserProfile(id)
@@ -147,8 +169,16 @@ func (u *UserApi) GetUserProfile(c *gin.Context) {
 //
 // database.DB.Model(&user).Updates(user)
 
-// TODO: 更新个人信息完善
+// UpdateUserProfile
+// @Tags UserApi
+// @Summary 更新用户个人资料
+// @Description update user profile
+// @Param id path int true "User ID"
+// @Param data body model.Profile true "User Profile Data"
+// @Success 200 {object} controller.SuccessResponse
+// @Router /api/v1/users/{id}/profile [put]
 func (u *UserApi) UpdateUserProfile(c *gin.Context) {
+	// TODO: 更新个人信息完善
 	response := NewResponse(c)
 	var data model.Profile
 	id, _ := strconv.Atoi(c.Param("id"))
@@ -159,8 +189,16 @@ func (u *UserApi) UpdateUserProfile(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Code: code})
 }
 
-// TODO: 修改用户密码
+// ChangeUserPassword
+// @Tags UserApi
+// @Summary 修改用户密码
+// @Description change user password
+// @Param id path int true "User ID"
+// @Param data body model.User true "Password Data"
+// @Success 200 {object} controller.SuccessResponse
+// @Router /api/v1/users/{id}/password [put]
 func (u *UserApi) ChangeUserPassword(c *gin.Context) {
+	// TODO: 修改用户密码
 	response := NewResponse(c)
 	var data model.User
 	id, _ := strconv.Atoi(c.Param("id"))
