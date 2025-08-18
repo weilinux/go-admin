@@ -17,7 +17,8 @@ type Service struct {
 
 func New(c config.Config) Service {
 	return Service{
-		Config: c,
+		// Config: c,
+
 	}
 }
 

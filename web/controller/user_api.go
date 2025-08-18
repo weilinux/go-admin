@@ -209,13 +209,13 @@ func (u *UserApi) ChangeUserPassword(c *gin.Context) {
 	response.ToResponse(SuccessResponse{Code: code})
 
 	// TODO: 修改用户密码:github td27-admin
-	// var mp systemReq.ModifyPass
-	// _ = c.ShouldBindJSON(&mp)
 	//
+	// _ = c.ShouldBindJSON(&mp)
 	// // 参数校验
 	// validate := validator.New()
 	// if err := validate.Struct(&mp); err != nil {
 	// 	response.FailWithMessage("请求参数错误", c)
+	// var mp systemReq.ModifyPass
 	// 	global.TD27_LOG.Error("请求参数错误", zap.Error(err))
 	// 	return
 	// }

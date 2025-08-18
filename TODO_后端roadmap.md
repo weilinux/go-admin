@@ -181,3 +181,5 @@ The course is for developers able to code and complete exercises in Java, C#, or
 Data Flow(ERD)
 The ERD diagram showcases the data flow and relationships between different entities in the database, ensuring data integrity and coherence.
 //========================================================================
+
+https://www.youtube.com/watch?v=3ts5GSnsz8E&list=PLyH7UFQzuDWcsiICLG5cbOc4aYx-Cfrm-

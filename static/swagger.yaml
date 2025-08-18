@@ -199,6 +199,33 @@ paths:
       summary: 用户注册
       tags:
       - UserApi
+  /api/v1/contadd:
+    post:
+      description: 创建并启动一个新的 Docker 容器，使用指定的镜像和配置
+      parameters:
+      - default: '"nginx:latest"'
+        description: Docker 镜像名称
+        in: body
+        name: image
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.SuccessResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: 创建一个新的 Docker 容器
+      tags:
+      - ContainerApi
   /api/v1/conts:
     get:
       description: get container list from Docker

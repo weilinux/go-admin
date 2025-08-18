@@ -103,6 +103,21 @@ func AddRoutes(r *gin.Engine) {
 		host.DELETE("/hosts/:id", hostApi.DeleteHost)
 	}
 
+	// container管理
+	contApi := new(controller.ContApi)
+	cont := admin.Group("/")
+	{
+		// cont.GET("/users/:id/conts", hostApi.GetBindConts)
+		// cont.GET("/users/searchcont", hostApi.SearchConts)
+
+		cont.GET("/conts", contApi.GetConts)
+		cont.POST("/contadd", contApi.CreateContainer)
+		// cont.POST("/conts", hostApi.AddCont)
+		// cont.PUT("/conts/:id", contApi.EditCont)
+		// cont.GET("/conts/:id", contApi.ContInfo)
+		// cont.DELETE("/conts/:id", contApi.DeleteCont)
+	}
+
 	// TODO: add 新开tab的标题应该是服务器的主机名称
 	xterm := admin.Group("/")
 	{

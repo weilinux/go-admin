@@ -64,6 +64,10 @@ agent组管理
 //避免使用全局变量
 
 
+新一代服务器运维管理面板。简单轻量，高效运维。 go&vue
+https://github.com/tnb-labs/panel
+
+
 
 
 

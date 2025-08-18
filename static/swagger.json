@@ -97,6 +97,53 @@
                 }
             }
         },
+        "/api/v1/contadd": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "创建并启动一个新的 Docker 容器，使用指定的镜像和配置",
+                "tags": [
+                    "ContainerApi"
+                ],
+                "summary": "创建一个新的 Docker 容器",
+                "parameters": [
+                    {
+                        "default": "\"nginx:latest\"",
+                        "description": "Docker 镜像名称",
+                        "name": "image",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controller.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": true
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/conts": {
             "get": {
                 "security": [

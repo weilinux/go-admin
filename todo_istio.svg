@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 650">
+    <!-- User class -->
+    <rect x="150" y="50" width="200" height="200" fill="#E0F7FA" stroke="#006064" stroke-width="2" />
+    <line x1="150" y1="85" x2="350" y2="85" stroke="#006064" stroke-width="2" />
+    <line x1="150" y1="155" x2="350" y2="155" stroke="#006064" stroke-width="2" />
+
+    <text x="250" y="70" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">User</text>
+    <text x="160" y="105" font-family="Arial" font-size="14">- ID: string</text>
+    <text x="160" y="125" font-family="Arial" font-size="14">- Username: string</text>
+    <text x="160" y="145" font-family="Arial" font-size="14">- Email: string</text>
+    <text x="160" y="165" font-family="Arial" font-size="14">- Roles: []Role</text>
+
+    <text x="160" y="185" font-family="Arial" font-size="14">+ AddRole(role Role)</text>
+    <text x="160" y="205" font-family="Arial" font-size="14">+ RemoveRole(role Role)</text>
+
+    <!-- Role class -->
+    <rect x="150" y="300" width="200" height="180" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2" />
+    <line x1="150" y1="335" x2="350" y2="335" stroke="#2E7D32" stroke-width="2" />
+    <line x1="150" y1="395" x2="350" y2="395" stroke="#2E7D32" stroke-width="2" />
+
+    <text x="250" y="320" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Role</text>
+    <text x="160" y="355" font-family="Arial" font-size="14">- ID: string</text>
+    <text x="160" y="375" font-family="Arial" font-size="14">- Name: string</text>
+    <text x="160" y="395" font-family="Arial" font-size="14">- Permissions: []Permission</text>
+
+    <text x="160" y="425" font-family="Arial" font-size="14">+ AddPermission(permission Permission)</text>
+    <text x="160" y="445" font-family="Arial" font-size="14">+ RemovePermission(permission Permission)</text>
+
+    <!-- Permission class -->
+    <rect x="150" y="530" width="200" height="100" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="2" />
+    <line x1="150" y1="565" x2="350" y2="565" stroke="#6A1B9A" stroke-width="2" />
+
+    <text x="250" y="550" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Permission</text>
+    <text x="160" y="585" font-family="Arial" font-size="14">- ID: string</text>
+    <text x="160" y="605" font-family="Arial" font-size="14">- Endpoint: string</text>
+
+    <!-- Relationship lines -->
+    <!-- User to Role -->
+    <line x1="250" y1="250" x2="250" y2="300" stroke="#000" stroke-width="2" />
+    <circle cx="250" cy="250" r="5" fill="#000" />
+    <text x="265" y="280" font-family="Arial" font-size="14">*</text>
+
+    <!-- Role to Permission -->
+    <line x1="250" y1="480" x2="250" y2="530" stroke="#000" stroke-width="2" />
+    <circle cx="250" cy="480" r="5" fill="#000" />
+    <text x="265" y="510" font-family="Arial" font-size="14">*</text>
+</svg>

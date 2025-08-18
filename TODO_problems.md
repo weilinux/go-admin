@@ -54,3 +54,12 @@ https://github.com/aitemr/awesome-git-hooks/blob/master/pre-commit/pre-commit-sw
 当下流行的golang发布工具
 https://goreleaser.com/
 
+
+go-gin-skeleton-auth-js
+#go-web-skeleton 已经更新，注意两步一下缓存的部分
+https://github.com/inhere/go-web-skeleton/tree/main
+
+
+
+接口处理方法模式 role+CURD
+func (r *Role) AddPermission(permission string) {

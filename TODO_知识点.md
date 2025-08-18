@@ -1,0 +1,397 @@
+//设计防腐化
+https://github.com/fangyang921017/Software-Architecture-Design
+https://github.com/stevenli91748/Software-Architecture-Design/blob/master/%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E6%98%AF%E6%80%8E%E6%A0%B7%E7%82%BC%E6%88%90%E7%9A%84/README.md
+
+//对于抽象层次的权衡是我们系统设计的关键所在, 也是区分普通程序员和优秀程序员的重要参考指标.
+
+//1）优秀的设计都是需求驱动的，不熟悉需求就做出来的设计是不靠谱的；
+//2）优秀的设计应该是当前团队能理解能实现的，太超前的设计项目团队做不出来，这个设计只能是摆设；
+//3）优秀的设计应充分考虑当前各种限制条件，适当做出平衡，能保证达成项目的目标：
+//4）优秀的设计能尽量降低项目的整体工作量，让整个项目更加可控。
+
+//架构设计要从物理设计的深度来思考，而不能仅仅是理论设计或者是逻辑上的设计，否则又会犯了太空洞的毛病（即“放之四海而皆准”的毛病）。
+
+//小结一下分布式系统的架构设计要点，单机系统也可以参考：
+//1）我们的系统大部分会涉及到多个客户端及服务器，我们需要思考我们的系统需要怎样的客户端及服务器，思考这些设备上面需要安装怎样的操作系统、平台、软件等，思考这些设备需要怎样的硬件配置，如CPU、内存、硬盘大小等等。
+//2）我们需要思考这些客户端及服务器之间的物理联系方式，例如：是局域网方式、互联网，还是两者都支持？是HTTP或是HTTPS？等等。
+//4）思考系统需要开发什么软件和数据库等，这些是第一次对系统各部分的拆分，姑且这叫”第一层的拆解“。
+//5）继续拆解时可参考分层架构，但需要拆分得更加具体，不要犯”放之四海而皆准“的毛病。这个层次的拆解，姑且叫“第二层的拆解”。
+//6）除了规划好内部各部分的关系，还需要规划内部的各部分与外部之间的关系。
+//7）在拆解的过程中，问题会越来越多，也会越来越细，这是正常现象，也是好现象。
+//8）拆解过程中也可能会发现之前初步架构设计中不合理或遗漏的地方，请马上调整；有时候甚至会发现之前的设计完全不对，那么就要有勇气推翻重做。
+//9）“第二层的的拆解”结果有可能是组件（Component）、代码包、某个分层等等，可能是“物理分拆”也可能是“逻辑分拆”。那么“第二层的拆解”要多细才合适呢？其实很难有固定的标准，给一个简单标准作为参考：如果再拆解下去下一步的拆解就到类了，那么就可以认为目前的拆解粒度比较合适了。细化到类的拆解，可以在模块设计（详细设计）中再进一步考虑。
+
+Section 1: Principles of System Design
+1.1: Modularization
+Dividing the system into smaller, manageable modules help reduce complexity, improve maintainability, and increase reusability.
+1.2: Abstraction
+Hiding the implementation details and showing only the essential features helps simplify complex systems and promote modularity.
+1.3: Layering
+Organizing the system into layers, each layer providing a specific set of functionalities promotes the separation of concerns and enhances maintainability.
+1.4: Scalability
+Design systems to handle the increased load by adding more resources (horizontal scaling) or optimizing the system’s capacity (vertical scaling).
+1.5: Performance
+Optimizing the system’s response time, throughput, and resource utilization is crucial for a successful design.
+1.6: Security
+Ensure the system’s confidentiality, integrity, and availability by implementing proper security measures and practices.
+
+
+// 统计代码中的编程元素的数量，数据上证明优秀代码的元素分布
+
+
+//========================================================================
+// 简单原则- KISS (keep it simple and stupid)-这不是说手段，而是说我们的目标
+//========================================================================
+YAGNI原则, KISS原则
+code++, 防止代码腐坏
+code++, 10w行》》》》1000行 (代码规模越大，越容易变成麻烦事)
+敏捷原则:快速迭代
+编程本质就是隔离逻辑块，因为业务是复杂的，通过构建逻辑块控制复杂度。构建隔离块及其连接,当然越简单越好
+项目越到后期越没有时间进行重构,所以重构是基本是实时的
+简单的背后，需要精心的业务分解与架构设计，并非单纯的简单了事。
+简单不等于数量少（代码行少，依赖库少，架构设计少), 一个简单地引入新的三方组件,可能隐藏了未知的复杂从而使用问题更复杂
+简单代码可能会很简洁，但一定不是过度简洁:任何时候不要走极端
+保持简单不是简单设计，而是以最终产出为目标，过程可能非常复杂也没关系
+
+简单需要坚持
+真正的简单代码通常背后都隐藏了大量不简单的工作，比如，
+仔细分析需求，
+选择合适的技术框架，
+设计更合适的数据结构和算法，
+实现时保持代码可读性，
+等等，每一件事都不简单，并且长期坚持才有可得到最后的简单
+
+简单应该是尽量简单，但又不能太简单。换句话说，就是要管理合适的代码上下文环境，
+并且在边界范围内以“最少知识”的方式构建程序，满足要求即可，保持一定的克制(不得随意发现需求)
+
+代码写出来后，80% 的时间都在被阅读，简单代码的好处在于能让别人一眼就知道代码表达的意图，要想做到这样，
+就对写代码的人提出了一个更高的要求：不仅需要使用清晰的算法和数据结构实现代码逻辑，还需要使用面向对象编程
+技巧提升代码复用性，甚至需要写更多的单元测试和注释来提升可维护性。总之，好的代码就是将简单带给别人，复杂留给自己。
+
+四要&四不要
+不要长期进行打补丁式的编码(修改改，见效快)
+不要炫耀编程技巧,尤其在维护类项目上面
+不要简单编程：硬编码、一次性编码、复制粘贴编码、面向搜索编程都是简单编程，如果一直习惯性地简单编程, \
+那么带来的可能就是更复杂、更高成本的重构和重写
+不要过早地优化，后面的人会发现代码不好修改，核心代码逻辑容易被隐藏
+
+要定期进行code review
+要选择合适的编码规范
+要适时重构: 完全可以轻松地在每一个小的迭代版本里进行重构，比如，
+    分离一个过多职责的类，
+    抽象一个上次没来得及做的通用服务，
+    减少业务里 if-else 的嵌套层数，
+    对不同业务数据对象分包管理等,(package划分)
+    及时这样做以后，代码整体就会变得简单。
+
+要有目标地逐渐优化(有较详细目标，分段执行)
+YAGNI原则(You Are't Goona Need it) , 不要随意扩展将来可能用得上的逻辑!!!
+
+简单的结果往往意味着更复杂的过程。付出更多去维护简单。
+
+
+//========================================================================
+// 03  分层思维：为什么要做代码分层架构？
+//========================================================================
+
+隔离的逻辑块 + 逻辑块间关系
+------------------------
+  软件架构(非功能性需求)
+
+软件部署分层 --> 代码分层架构 --> 核心思想：隔离关注点+变化在层里
+
+APP分层 --> View层 || controller层 || Model 层 || DB 层 \\核心思想：请求或数据必须从左向右 层层传递
+DB分层 --> 连接层（Connection Layer）| 服务层（Server Layer） | 存储引擎层（Storage Engine Layer）
+
+代码分层架构主要是为了解决两个问题：
+如何快速拆解功能问题？(CF Login | CF prune-All-Apps(这里继续拆解成子域问题) | CF Logout)
+所以说：从功能性需求角度来看，代码分层本身就是一种拆解复杂问题的好方法。
+分层 - 复杂逻辑切分为多个层，大问题-->小问题-->容易抽象为组件-提升可复用性和扩展性-->更容易横向扩展
+
+代码分层架构的核心作用有两个：
+对于功能性需求，将复杂问题分解为多个容易解决的子层问题；
+对于非功能性需求，可以提升代码可扩展性。
+
+
+//========================================================================
+06  迭代思维：如何高效编程？
+//========================================================================
+编程效率不等同于提升编码速度
+3个问题:
+    只关心代码是否正常运行，而对最终是否满足用户需求不在意；
+    容易陷入代码细节而忽略整体，比如，系统设计、项目进度、与他人协作等；
+    不太关心可测试性、可维护性，以及简洁的高质量代码该怎么写。
+高效编程除了需要提升细节上的编程效率外，还需要你能时常跳出细节思维，从整体的工作流程上去思考与改进
+
+高效编程 --> 高效的工作流
+高效编程 = 原则 * 工具 * 编码 * 反馈 * 迭代
+编程 = 写代码 + 讨论 + 学习 + 反思
+
+问题到你为止 - 承担责任
+打破砂锅问到底 - 解决编程上的本质问题越多，越能反过来提升编程上的效率
+打磨工具 - 提升编程效率，你应该还需要一个组件实验环境和一个工具代码库
+    平时如果有空闲时，应该多尝试搭建一下新组件的实验环境，一方面可以熟悉组件特性，另一方面是培养你编程上多准备的习惯
+    强烈建议你要试着建一个自己的工具库。这个工具库存储的可以是你工作中常用的自动化测试脚本、一段简练的代码片段、对某个工具的二次或三次封装等。
+
+重复硬编码
+编程时只写代码是不够的，想要获得更高的效率，还要学会及时反馈遇见的问题。
+迭代更新 - 核心是记录版本并且记录每一次关键修改信息
+
+实现实中要用到设计模式的场合不是很多，而且这些仅仅是术，反倒是编程反式、SOLID原则等等思想性的东西考虑得应该更多一点，
+这才是道和体的部分，我们编程时千万不能本末倒置
+
+
+//========================================================================
+09  迪米特法则又叫最少知识原则
+//========================================================================
+//final String outputDir = ctxt.getOptions().getScratchDir().getAbsolutePath();
+链式调用链太长 --> 迪米特法则 : 核心：迪米特法则正是为了避免对象间出现这样过多的细节依赖而被提出来
+
+迪米特法则（Law of Demeter，简称 LoD） 是由 Ian Holland 于 1987 年提出来的，它的核心原则是：
+    一个类只应该与它直接相关的类通信；
+    每一个类应该知道自己需要的最少知识。
+分层架构，其实就可以被认为是迪米特法则在架构设计上的一种具体体现
+分层架构中，每一层的模块只能调用自己层中的模块，跳过某一层直接调用另一层中的模块其实就是违反了分层架构的原则。
+
+迪米特法则:--> 各司其职,不能随意切入
+A方法尽量不要去管B方法中的事
+A对象尽量不要去管B对象中的事(例如收银员亲自去减用户的账单，这是不对的，应该只是审核用户的账单)
+A模块尽量不要去管B模块中的事
+A服务尽量不要去管B服务中的事
+
+面向切面编程，简单来说，就是可以在不修改已有程序代码功能的前提下给程序动态添加功能的一种技术。
+静态：如果说迪米特法则是在程序设计时（静态） 降低代码耦合的方法的话，
+动态：那么面向切面编程就是在程序运行期间（动态） 降低代码耦合的方法 java-->spring-->AspectJ
+
+
+//========================================================================
+10  表达原则：如何让源代码成为一种逻辑线索？
+//========================================================================
+表达原则（Program Intently and Expressively，简称 PIE），起源于敏捷编程，是指编程时应该有清晰的编程意图，
+并通过代码明确地表达出来。
+
+表达原则的核心思想就是：代码即文档.-->从使用者的角度编码 --> code reviewer像阅读设计文档一样的
+
+要想写出可读性高的代码，你可以从三个方面来入手。
+    代码表现形式：在命名（变量名、方法名、类名）、代码格式、注释等方面的改进。
+    控制流和逻辑：尽量分离控制流和逻辑，让代码变得更容易理解。
+    惯性思维：找出常犯的一些惯性思考方式并逐一改进。
+
+命名的优化加上注释的说明”一下子就让源代码的逻辑变得清晰起来
+改进控制流和逻辑-->改变控制流，先判断会出现失败的条件，一旦出现优先推出 --> if嵌套>3, 就应该优化控制流程
+
+避免惯性思维
+    要避免一次性代码 -->非考虑重用性-->数据，逻辑冗余
+    要避免复制粘贴代码
+    避免写超长代码
+    避免过度简化命名和表达式
+
+应该把提高代码可读性作为第一要务，就是因为读代码的次数远比写代码的次数多，包括你正在写的代码也是如此
+
+设计模式除了在设计之初被使用外，其实更多时候都是在代码重构过程中被使用。在工作中，你会发现有的代码虽然写了很多嵌套
+的if-else，但命名和注释都写得很好，逻辑也很易读，在重构时就能通过设计模式很好地去优化。而有的代码虽然看上去很简洁，
+但使用了很多高级技巧或缩写命名，理解起来非常费时、费力，对于维护人员来说，自然不愿意考虑使用设计模式
+
+
+//========================================================================
+14  惯例原则：如何提升编程中的沟通效率？
+//========================================================================
+为什么关于 Spring 框架的源码研究后，大家沟通效率高？
+因为 Spring Boot 框架应用了一个简单的原则来帮助编程者提前建立了隐形的公共知识体系 -->惯例优于配置原则
+因为 Spring Boot 框架应用了一个简单的原则来帮助编程者提前建立了隐形的公共知识体系 -->惯例优于配置原则
+因为 Spring Boot 框架应用了一个简单的原则来帮助编程者提前建立了隐形的公共知识体系 -->惯例优于配置原则
+
+惯例原则（Convention over Configuration，常用英文缩写 CoC）
+惯例原则就是将一些在编程中公认的配置方式和约定信息作为内部缺省的默认规则来使用
+惯例原则通常也叫按约定编程
+
+第一，遵循大多数人使用的惯例。
+第二，要搞清楚惯例的适用范围
+第三，自定义惯例时需要在团队内反复不断确认
+第四，要在惯例和灵活性之间做平衡
+第五，不要强制他人使用惯例
+
+惯例原则的初衷是提供隐形的公共知识，来减少开发人员重复决策的次数。
+惯例原则的优势在于能够帮助我们降低编程时的学习成本，不过它也有一些劣势
+
+
+//========================================================================
+17  单例模式：如何有效进行程序初始化？
+//========================================================================
+
+设计模式：可复用面向对象的基础>>> 在设计中思考什么应该变化，并封装会发生变化的概念。
+找到变化，封装变化 -->固定逻辑块
+
+学习设计模式真正的好处并不在于学会“如何使用”它们，而是在于通过分析学到“如何找到变化，
+如何封装变化”的思想精髓，并最终通过实践融合到实际编程中，对实际编码设计有帮助。
+
+高效尝试设计模式：
+    这个模式中隐藏（封装）了什么实现（变化）？
+    这个模式中有什么共性规律（哪类变化）？
+    这个模式中的对象职责是什么？
+    这个模式中对象之间的关系是什么？
+    这个模式常用在哪些场景中？
+    这个模式基于常用场景的通用代码实现是什么？
+    这个模式如何基于上下文环境来进行设计和使用？
+
+
+单例模式的对象职责有两个：
+    保证一个类只有一个实例 -->初始化一个对象最合适
+    为该实例提供一个全局访问节点。
+单例模式就类似于全局变量或全局函数的角色，可以使用它来代替全局变量。
+
+为什么使用单例模式？
+通过上面的分析，现在我们就可以来回答这个问题了：为什么要使用单例模式？
+
+第一，系统某些资源有限。比如，控制某些共享资源（例如，数据库或文件）的访问权限。资源有限就会带来访问冲突的问题，
+如果不限制实例的数量，那么很快有限的资源就会耗尽，同时造成大量的对象处于等待资源中。再比如，同时读写同一个超大
+的 AI 模型文件，或使用外部进程式服务，如果不使用单例模式，随着用户进程数开启越多，系统原有的进程处理资源就会变
+得越少，这不仅会导致操作系统处理速度变慢，同时也会影响用户进程自身的处理速度。
+
+第二，需要表示为全局唯一的对象。 比如，系统要求提供一个唯一的序列号生成器。客户调用类的单个实例只允许使用一个公共
+访问点，除了该公共访问点，不能通过其他途径访问该实例。在一个系统中要求一个类只有一个实例时才应当使用单例模式。反过来，
+如果一个类可以有几个实例共存，就需要对单例模式进行改进，使之成为多例模式。
+
+设计模式的底层逻辑就是：找到变化，封装变化。学习任何设计模式时，你都应该牢牢抓住这个本质核心，
+同时也要不断复习简单的学习框架，因为这在后面更多的模式学习中会起到关键的作用。
+
+
+//========================================================================
+07  单一原则：如何跳出错误抽象的误区？
+//========================================================================
+
+
+//========================================================================
+https://github.com/atharv-bhadange/go-api-template/tree/main
+
+Folder Structure:
+/api/v1 Encapsulates all API version 1 routes, controllers, services, and middleware.
+/cmd Initialises the Fiber app and sets up basic middleware configurations.
+/config Handles configuration and environment variables.
+/db Manages database connections and interactions.
+/handlers Manages responses and database transactions.
+/models Contains auto-generated models from database tables using sqlboiler.
+/secure Stores SSL certificates (excluded from version control).
+/types Defines custom types for cross-app usage.
+/utils Provides utility functions.
+main.go The entry point of the application.
+
+
+Optional Hot Reloading:
+For a more dynamic development experience, enable hot reloading with the following steps:
+Install air: Run go get github.com/cosmtrek/air.
+Start with Hot Reloading: Start the app with hot reloading using air.
+
+Additional Notes and Best Practices:
+The boilerplate includes a sample product API implementation for reference.
+It’s recommended to start new PGX transactions from controllers only.
+All routes, except for the health check endpoint, are located under the /api/v1 path.
+For better organisation, the models folder can be managed as a separate Git submodule.
+//========================================================================
+
+
+// Sharding PostgreSQL with Citus and Golang
+https://medium.com/@bhadange.atharv/sharding-postgresql-with-citus-and-golang-on-gofiber-21a0ef5efb30
+
+//Simple and minimal Go template for building fast and mantainable HTTP services
+https://github.com/paologaleotti/blaze/tree/master
+https://github.com/paologaleotti/blaze-api-example/tree/master
+https://github.com/paologaleotti/blaze-cli/tree/master
+//========================================================================
+
+// go Prod-ready GO Restful API  boilerplate with Echo
+https://github.com/codoworks/go-boilerplate
+
+
+确定需求-选择开发工具和框架 - 数据库建模与设计 - 编写业务逻辑 - 创建Restful API - 用户认证与授权 - 日志记录与错误处理
+确定需求-选择开发工具和框架 - 数据库建模与设计 - 编写业务逻辑 - 创建Restful API - 用户认证与授权 - 日志记录与错误处理
+
+
+--parseInternal     
+
+identify problems, inefficiencies, or ineffective methods and find tangible, actionable, lasting solutions
+
+Explain the code out loud to an inanimate object
+Explain the code out loud to an inanimate object
+Explain the code out loud to an inanimate object
+
+//========================================================================
+Recursion
+Pointers
+Memory mgmt
+Async code
+Cybersecurity
+//========================================================================
+
+读取框架或库文档：
+what methods available to a structure/interface ?  what is ins/outs of this functions look like
+看看优秀的人是如何使用一个包(packge)或框架(framework)的，别人是如何集成到自己的代码中的!! grep.app: search import package
+看看优秀的人是如何使用一个包(packge)或框架(framework)的，别人是如何集成到自己的代码中的!! grep.app: search import package 
+
+
+解决bug的诀窍之一：Explain the code out loud to an inanimate object( a rubber duck)
+解决bug的诀窍之一：Explain the code out loud to an inanimate object( a rubber duck)
+解决bug的诀窍之二：grep.app: Someone else has probably had a similar situation and has a quick solution.
+解决bug的诀窍之二：grep.app: Someone else has probably had a similar situation and has a quick solution.
+I don't know what library I might need to solve my problem. Google that problem for suggestion
+I don't know what library I might need to solve my problem. Google that problem for suggestion
+determine the best web framework for my use case. Google that questions and Blogs comparing diff top web Framework
+determine the best web framework for my use case. Google that questions and Blogs comparing diff top web Framework
+
+
+Podcasts are a fantastic way to learn big-picture coding concepts and what is happening in the world of coding.
+
+Code Newbie: This is a ~45 min per episode interview-style podcast
+Junior Developer Toolbox:
+Command Line Heros:
+Python Bytes:
+Talk Python to Me:
+Real Python:
+Syntax Web Development:
+
+Podcast广播节目:
+Programming podcasts. There are so many good ones out there. I recommend typing "{insert your coding language} podcast" into google and see what comes up.
+
+The more projects, the better. Second, it allows you to say that you coded for your job.
+
+a profile website 
+One thing you can do is provide links on your resume to your GitHub-hosted projects. 
+Linkedln account
+//========================================================================
+简历:
+突出技能点：
+突出项目点：
+非相关工作经历简化处理：
+highlight your projects: List those capstone projects you worked so hard on. Add details about what technologies you used to create them.
+
+career networking: 
+//========================================================================
+
+
+# debug go app in docker  with dlv 
+
+https://antonio-si.medium.com/a-few-tips-on-remote-debugging-golang-applications-running-in-an-m1-docker-container-68606326e83e
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,10 +1,15 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/weilinux/go-gin-skeleton-auth/pkg/errcode"
 	"net/http"
+
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/client"
 )
 
 type ContApi struct {
@@ -139,6 +144,43 @@ func (h *ContApi) GetConts(c *gin.Context) {
 		"rows":   conts,
 		"total":  len(containers),
 	}
+	response.ToResponse(SuccessResponse{
+		Data: data,
+	})
+}
+
+// CreateContainer
+// @Tags ContainerApi
+// @Summary 创建一个新的 Docker 容器
+// @Description 创建并启动一个新的 Docker 容器，使用指定的镜像和配置
+// @Security Bearer
+// @Param image body string true "Docker 镜像名称" default("nginx:latest")
+// @Success 200 {object} controller.SuccessResponse{data=map[string]interface{}}
+// @Router /api/v1/contadd [post]
+func (h *ContApi) CreateContainer(c *gin.Context) {
+	response := NewResponse(c)
+	cli, err := client.NewClientWithOpts(client.WithHost("http://47.92.27.135:8088"), client.FromEnv)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Connected to Docker daemon")
+	ctx := context.Background()
+	cont, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "nginx:latest",
+	}, nil, nil, nil, "myNginx")
+	if err != nil {
+		panic(err)
+	}
+	if err = cli.ContainerStart(ctx, cont.ID, container.StartOptions{}); err != nil {
+		response.ToErrorResponse(errcode.ServerError.WithDetails(err.Error()))
+	}
+
+	data := map[string]interface{}{
+		"Msg":  "容器创建成功",
+		"Data": cont.ID,
+	}
+
 	response.ToResponse(SuccessResponse{
 		Data: data,
 	})

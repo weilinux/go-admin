@@ -9,6 +9,13 @@ type PermissionApi struct {
 	BaseApi
 }
 
+// GetPermissions
+// @Tags PermissionApi
+// @Summary 获取权限列表
+// @Description 获取所有权限的列表
+// @Security Bearer
+// @Success 200 {object} controller.SuccessResponse{data=map[string]interface{}}
+// @Router /api/v1/permissions [get]
 func (p *PermissionApi) GetPermissions(c *gin.Context) {
 	response := NewResponse(c)
 	permission := model.AllPermissions()

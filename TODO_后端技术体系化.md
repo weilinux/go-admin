@@ -207,5 +207,62 @@ Every time new module is added leads to changes in program. This type of testing
 	}
 //========================================================================
 
+事件流 范式 更适合 动态变化的场景的呢
+冒泡流| 捕获流
+
+
+Gain curiosity > learn basis > get more interest > practice regularly > repeat > learn advance topics > apply those concepts > learn and repeat (no end)
+What programmer should focus on is to understand how to write cleaner code and best programming principles and patterns
+Much more important is to understand underlying design principles and best design practices for a particular programming language, 
+and how exactly you code is up to you. And never forget that your finest tool is your mind
+
+By all means solidify your understanding by studying theory
+
+//========================================================================
+go基底结构体定义：最佳实践建议
+//基底结构体中的所有字段和方法都可以被外层结构体直接使用 !!!(注意是直接调用!!!)
+适当的使用范围：
+	基础信息字段（如ID、时间戳等）
+	通用的业务属性(base structure provides common functionality: BaseHandler, BaseApi, CommonHandler, CommonApi)
+	常见的辅助方法
+命名约定：
+	基底结构体使用Base或Common前缀
+	字段名称要清晰明确，避免冲突
+	方法名称要符合Go规范
+注意事项：
+	控制基类的大小，避免过度嵌入
+	合理设计接口和方法
+	考虑内存占用问题
+//========================================================================
+
+
+//========================================================================
+1- being ressourceful (Learn to solve problems, develop critical thinking, discuss issues with teammates, read documentation)
+	Be resourceful as a developer by using available resources effectively, like AI tools.
+2- version control (advanced concepts in GIT and GITHUB)
+3- data structure & code efficiency ( learn how to manipulate data in a creative way so that you can save time and storage)
+4- scripting and automation (learn how to speed making scripts of tasks that are repertitive and that can make you save a ton of time)
+5- Asynchronous programming  (learn how run programs in "parallele" )
+	Dive deep into asynchronous programming to handle multiple calls efficiently and synchronize them in larger systems.
+6- CI & CD : continuous integration and continuous deployment (take at least the basic concepts)
+7- clear and precise and accurate communication
+8- Learn debugging, especially on prod. Usually it means adding necessary metrics/logs, so you know what’s going on. Seniors debug faster than 
+	juniors not because they are smarter but because they have logging experience
+//========================================================================
+First and most powerful skill is to be patient and be extremely critic.
+Second and most beneficial skill is to be able to analyze the situation to understand the solution.
+Third and most appreciate skill is to be able to communicate and exchange ideas and solution.
+Fourth is the outmost effective skill is to be able to write simple code to implement a complex solution.
+//========================================================================
+
+1) write all code as nested one-liners with insanely many sub-steps that are completely impossible to debug. NEVER write separate sub-operations that allow others to check what the different steps actually do.
+2) Use the Stream api everywhere and don't forget to use lambda statements as often as possible
+3) use reflections seasoned with generics for even the simplest data structures.
+4) NEVER comment code, it violates the clean code principle where the code is supposed to be the documentation.
+5) No matter how new you are to a new feaure in a language / library: ALWAYS start by creating a framework on top of it that other developers must use even if you yourself do not master the basics of the language / library.
+6) fhk up the code using the spring framework everywhere, even if the language you are using already has better and simpler features for the same
+
+
+
 
 

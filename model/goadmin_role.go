@@ -24,6 +24,7 @@ func AllRoles() []Role {
 }
 
 func GetRole(role *Role) int64 {
+	//
 	count := db.Preload("Permissions").Where("id = ?", role.ID).Find(&role).RowsAffected
 	return count
 }
